@@ -25,6 +25,14 @@ struct VariableRanges {
 class DataLoader {
 public:
     /**
+     * Resolves short filenames to full paths by checking common directories.
+     * @param inputPath The filename or path.
+     * @param defaultDir The folder inside basic/ where this file usually resides ("ranges" or "registers").
+     * @return The resolved path.
+     */
+    static std::string resolvePath(const std::string& inputPath, const std::string& defaultDir);
+
+    /**
      * Parses the registers.txt file to extract register and algorithm configuration.
      * @param filename Path to the configuration file.
      * @return RegisterConfig struct containing the parsed data.

@@ -1,7 +1,7 @@
 #include "Menu.h"
-#include "../utils/DataLoader.h"
 #include <iostream>
 #include <limits>
+#include <string>
 
 Menu::Menu() {
     // Constructor
@@ -9,8 +9,6 @@ Menu::Menu() {
 
 void Menu::run() {
     int choice = -1;
-    DataLoader dataLoader;
-    std::string input;
 
     while (choice != 0) {
         std::cout << "\n--- Compiler Register Allocation Menu ---\n";
@@ -21,28 +19,66 @@ void Menu::run() {
         std::cout << "0. Exit\n";
         std::cout << "Enter your choice: ";
 
-        std::getline(std::cin, input);
-
-        try {
-            choice = std::stoi(input);
-        } catch (...) {
+        if (!(std::cin >> choice)) {
             std::cerr << "Invalid input. Please enter a number.\n";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
 
+        // Clear the newline character left in the buffer after reading the integer
+        // so that subsequent std::getline calls don't skip automatically.
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
         switch (choice) {
-            case 1:
+            case 1: {
+                std::string rangesPath, registersPath;
+
+                std::cout << "Enter ranges file path: ";
+                std::getline(std::cin, rangesPath);
+
+                std::cout << "Enter registers file path: ";
+                std::getline(std::cin, registersPath);
+
                 std::cout << "Loading data...\n";
-                dataLoader.loadRanges("ranges.txt");
-                dataLoader.loadRegisters("registers.txt");
+                // Reset state before loading new data
+                dataLoaded = false;
+                rangesMap.clear();
+                registerConfig = RegisterConfig();
+
+                try {
+                    rangesPath = DataLoader::resolvePath(rangesPath, "ranges");
+                    registersPath = DataLoader::resolvePath(registersPath, "registers");
+                    
+                    rangesMap = DataLoader::loadRanges(rangesPath);
+                    registerConfig = DataLoader::loadRegisters(registersPath);
+                    dataLoaded = true;
+                    std::cout << "Successfully loaded " << rangesMap.size() << " variables and " 
+                              << registerConfig.numRegisters << " registers.\n";
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: Failed to load data. Returning to menu.\n";
+                }
                 break;
+            }
             case 2:
+                if (!dataLoaded) {
+                    std::cerr << "Error: You must load data first (Option 1) before running algorithms.\n";
+                    break;
+                }
                 std::cout << "Running Basic Register Allocation...\n";
                 break;
             case 3:
+                if (!dataLoaded) {
+                    std::cerr << "Error: You must load data first (Option 1) before running algorithms.\n";
+                    break;
+                }
                 std::cout << "Running Allocation with Web Spilling...\n";
                 break;
             case 4:
+                if (!dataLoaded) {
+                    std::cerr << "Error: You must load data first (Option 1) before running algorithms.\n";
+                    break;
+                }
                 std::cout << "Running Allocation with Web Splitting...\n";
                 break;
             case 0:

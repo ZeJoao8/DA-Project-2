@@ -15,6 +15,25 @@ namespace {
     }
 }
 
+std::string DataLoader::resolvePath(const std::string& inputPath, const std::string& defaultDir) {
+    if (inputPath.find('/') != std::string::npos || inputPath.find('\\') != std::string::npos) {
+        return inputPath;
+    }
+
+    std::ifstream currentDir(inputPath);
+    if (currentDir.good()) return inputPath;
+
+    std::string path1 = "../basic/" + defaultDir + "/" + inputPath;
+    std::ifstream f1(path1);
+    if (f1.good()) return path1;
+
+    std::string path2 = "../../basic/" + defaultDir + "/" + inputPath;
+    std::ifstream f2(path2);
+    if (f2.good()) return path2;
+
+    return path1; // fallback
+}
+
 RegisterConfig DataLoader::loadRegisters(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {

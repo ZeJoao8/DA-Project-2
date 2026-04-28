@@ -6,14 +6,15 @@ Este projeto foi desenvolvido no âmbito da unidade curricular de Desenho de Alg
 
 Para compilar este projeto, necessitas de ter instalado no teu sistema:
 * **CMake** (versão 3.10 ou superior)
-* Um compilador de **C++** que suporte a norma C++17 (ex: GCC, Clang ou MSVC)
+* Um compilador de **C++** que suporte a norma C++17
 
 ## 🛠️ Como Compilar (Build)
 
-Recomenda-se a compilação numa pasta separada (`build`) para manter o código-fonte limpo. Executa os seguintes comandos na raiz do projeto (pasta `Code`):
+Recomenda-se a compilação numa pasta separada (`build`) para manter o código-fonte limpo. Executa os seguintes comandos dentro da pasta `code`:
 
 ```bash
 mkdir build
 cd build
 cmake ..
 cmake --build .
+./myProg
