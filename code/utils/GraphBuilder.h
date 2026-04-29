@@ -2,6 +2,7 @@
 #define GRAPHBUILDER_H
 
 #include "DataLoader.h"
+#include "../../data_structures/Graph.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -35,6 +36,17 @@ public:
      * @return std::vector<std::pair<int, int>> A list of edges representing interferences (Web ID pairs).
      */
     static std::vector<std::pair<int, int>> calculateInterferences(const std::vector<Web>& webs);
+
+    /**
+     * @brief Builds an Interference Graph from a list of Webs.
+     * 
+     * Each Web becomes a vertex (identified by its ID). An edge is added between
+     * two vertices if their corresponding Webs interfere.
+     * 
+     * @param webs The list of generated Webs.
+     * @return Graph<int> The interference graph.
+     */
+    static Graph<int> buildInterferenceGraph(const std::vector<Web>& webs);
 };
 
 #endif // GRAPHBUILDER_H

@@ -132,3 +132,20 @@ std::vector<std::pair<int, int>> GraphBuilder::calculateInterferences(const std:
 
     return interferences;
 }
+
+Graph<int> GraphBuilder::buildInterferenceGraph(const std::vector<Web>& webs) {
+    Graph<int> graph;
+
+    // Add one vertex per web (using web ID as info)
+    for (const auto& web : webs) {
+        graph.addVertex(web.id);
+    }
+
+    // Calculate interferences and add edges
+    auto interferences = calculateInterferences(webs);
+    for (const auto& [id1, id2] : interferences) {
+        graph.addBidirectionalEdge(id1, id2, 1.0);
+    }
+
+    return graph;
+}
