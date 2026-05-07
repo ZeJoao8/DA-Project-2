@@ -16,6 +16,7 @@ file(GLOB SOURCES
     "main.cpp"
     "App/*.cpp"
     "utils/*.cpp"
+    "data_structures/*.cpp"
 )
 
 # Cria o executável final com o nome "myProg"

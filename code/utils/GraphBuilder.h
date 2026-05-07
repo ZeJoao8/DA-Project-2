@@ -2,7 +2,7 @@
 #define GRAPHBUILDER_H
 
 #include "DataLoader.h"
-#include "../../data_structures/Graph.h"
+#include "data_structures/Graph.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
