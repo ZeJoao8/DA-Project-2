@@ -29,6 +29,7 @@ void Menu::run() {
             std::cerr << "Invalid input. Please enter a number.\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            choice = -1;
             continue;
         }
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
