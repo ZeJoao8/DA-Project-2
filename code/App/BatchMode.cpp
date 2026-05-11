@@ -1,5 +1,8 @@
 #include "BatchMode.h"
 #include "../utils/DataLoader.h"
+#include "../utils/GraphBuilder.h"
+#include "../algorithms/GraphColoring.h"
+#include "../utils/OutputWriter.h"
 #include <iostream>
 
 namespace BatchMode {
@@ -21,10 +24,34 @@ namespace BatchMode {
             std::cout << "Successfully loaded " << rangesMap.size() << " variables and " 
                       << registerConfig.numRegisters << " registers.\n";
             
-            // Algorithms and output writing will run here later...
+            // Build Webs
+            std::vector<Web> webs = GraphBuilder::buildWebs(rangesMap);
+            std::cout << "Generated " << webs.size() << " webs.\n";
+
+            // Build Interference Graph
+            Graph<int> interferenceGraph = GraphBuilder::buildInterferenceGraph(webs);
+            
+            // Run Basic Register Allocation
+            std::cout << "Running Basic Register Allocation...\n";
+            ColoringResult result = GraphColoring::run(interferenceGraph, webs, registerConfig.numRegisters, {});
+
+            // Write Results
+            if (OutputWriter::writeResult(outputFile, webs, result, registerConfig.numRegisters)) {
+                std::cout << "Results successfully written to " << outputFile << "\n";
+            } else {
+                std::cerr << "Error: Could not write results to " << outputFile << "\n";
+            }
+
+            if (!result.success) {
+                std::cerr << "WARNING: Register allocation with " 
+                          << registerConfig.numRegisters 
+                          << " register(s) was not possible.\n";
+            } else {
+                std::cout << "Allocation successful using " << result.numColorsUsed << " register(s).\n";
+            }
 
         } catch (const std::exception& e) {
-            std::cerr << "Error: Failed to load data in batch mode.\n";
+            std::cerr << "Error: Failed during batch mode execution: " << e.what() << "\n";
         }
     }
 }

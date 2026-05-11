@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include "../algorithms/GraphColoring.h"
 #include "../utils/DataLoader.h"
+#include "../utils/OutputWriter.h"
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -46,6 +47,9 @@ void Menu::run() {
 
       std::cout << "Enter registers file path: ";
       std::getline(std::cin, registersPath);
+
+      std::cout << "Enter output file path: ";
+      std::getline(std::cin, outputFilePath);
 
       std::cout << "Loading data...\n";
       dataLoaded = false;
@@ -242,6 +246,11 @@ void Menu::run() {
         graphBuilt = true;
       }
 
+      if (outputFilePath.empty()) {
+        std::cout << "Enter output file path: ";
+        std::getline(std::cin, outputFilePath);
+      }
+
       std::cout << "\nRunning Basic Register Allocation...\n";
       std::cout << "Available registers: " << registerConfig.numRegisters
                 << "\n";
@@ -252,78 +261,18 @@ void Menu::run() {
                                                  {} // sem spills forçados
       );
 
-      // ── OUTPUT conforme enunciado (Figuras 11 e 12) ──────────
-
-      std::cout << "\n# Total number of webs followed by the listing of the "
-                   "program points of each one\n";
-      std::cout
-          << "# program points in each web are sorted in ascending order\n";
-      std::cout << "webs: " << webs.size() << "\n";
-
-      for (const auto &web : webs) {
-        std::cout << "web" << web.id << ": ";
-        for (size_t i = 0; i < web.activeLines.size(); ++i) {
-          int line = web.activeLines[i];
-          std::cout << line;
-          // Marcar def com + e end com -
-          bool isDef = false, isEnd = false;
-          for (int d : web.defLines)
-            if (d == line) {
-              isDef = true;
-              break;
-            }
-          for (int u : web.useLines)
-            if (u == line) {
-              isEnd = true;
-              break;
-            }
-          if (isDef)
-            std::cout << "+";
-          if (isEnd)
-            std::cout << "-";
-          if (i + 1 < web.activeLines.size())
-            std::cout << ",";
-        }
-        std::cout << "\n";
+      if (OutputWriter::writeResult(outputFilePath, webs, result, registerConfig.numRegisters)) {
+        std::cout << "Results successfully written to " << outputFilePath << "\n";
+      } else {
+        std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
       }
 
-      std::cout << "\n# Total number of registers used, followed by assignment "
-                   "to webs\n";
-
       if (!result.success) {
-        // ── Caso infeasible (Figura 12) ──────────────────────
         std::cerr << "WARNING: Register allocation with "
                   << registerConfig.numRegisters
                   << " register(s) was not possible.\n";
-
-        std::cout << "registers: 0\n";
-        for (const auto &web : webs) {
-          std::cout << "M: web" << web.id << "\n";
-        }
       } else {
-        // ── Caso de sucesso (Figura 11) ──────────────────────
-        std::cout << "registers: " << result.numColorsUsed << "\n";
-
-        // Agrupar webs por registo
-        // r0: web0, r0: web2, r1: web1, etc.
-        for (int reg = 0; reg < result.numColorsUsed; ++reg) {
-          for (const auto &web : webs) {
-            auto it = result.webToRegister.find(web.id);
-            if (it != result.webToRegister.end() && it->second == reg) {
-              std::cout << "r" << reg << ": web" << web.id << "\n";
-            }
-          }
-        }
-
-        // Webs que foram forçadas a spill durante a coloração
-        for (const auto &web : webs) {
-          auto it = result.webToRegister.find(web.id);
-          if (it != result.webToRegister.end() && it->second == -1) {
-            std::cout << "M: web" << web.id << "\n";
-          }
-        }
-
-        std::cout << "\nAllocation successful using " << result.numColorsUsed
+        std::cout << "Allocation successful using " << result.numColorsUsed
                   << " register(s).\n";
       }
       break;

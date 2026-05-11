@@ -14,6 +14,7 @@ private:
     std::unordered_map<std::string, VariableRanges> rangesMap;
     std::vector<Web> webs;
     Graph<int> interferenceGraph;
+    std::string outputFilePath;
     bool graphBuilt = false;
 
 public:
