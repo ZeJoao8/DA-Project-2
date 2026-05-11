@@ -92,10 +92,10 @@ void Menu::run() {
                     for (const auto &point : varRanges.ranges[i]) {
                         std::cout << "" << point.line;
                         if (point.isDef)
-                            std::cout << "+";
-                        if (point.isEnd)
+                            std::cout << "+,";
+                        else if (point.isEnd)
                             std::cout << "-";
-                        std::cout << ",";
+                        else std::cout << ",";
                     }
                     std::cout << "\n";
                 }
