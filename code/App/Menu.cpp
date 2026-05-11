@@ -90,12 +90,12 @@ void Menu::run() {
                 for (size_t i = 0; i < varRanges.ranges.size(); ++i) {
                     std::cout << "    Segment " << i + 1 << ": ";
                     for (const auto &point : varRanges.ranges[i]) {
-                        std::cout << "L" << point.line;
+                        std::cout << "" << point.line;
                         if (point.isDef)
-                            std::cout << "(D)";
+                            std::cout << "+";
                         if (point.isEnd)
-                            std::cout << "(E)";
-                        std::cout << " ";
+                            std::cout << "-";
+                        std::cout << ",";
                     }
                     std::cout << "\n";
                 }

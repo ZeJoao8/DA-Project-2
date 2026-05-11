@@ -13,8 +13,8 @@ struct RegisterConfig {
 
 struct LiveRangePoint {
     int line;
-    bool isDef;
-    bool isEnd;
+    bool isDef; //se é a linha onde foi definido
+    bool isEnd; //se é a linha onde morreu
 };
 
 struct VariableRanges {
