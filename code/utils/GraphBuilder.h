@@ -8,13 +8,8 @@
 #include <unordered_map>
 #include <utility>
 
-struct Web {
-    int id;
-    std::string originalVariable;
-    std::vector<int> activeLines;
-    std::vector<int> defLines;
-    std::vector<int> useLines;
-};
+#include "../models/Web.h"
+
 
 class GraphBuilder {
 public:

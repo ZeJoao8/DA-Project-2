@@ -5,22 +5,9 @@
 #include <vector>
 #include <unordered_map>
 
-struct RegisterConfig {
-    int numRegisters = 0;
-    std::string algorithmName;
-    int algorithmParam = 0;
-};
+#include "../models/RegisterConfig.h"
+#include "../models/LiveRange.h"
 
-struct LiveRangePoint {
-    int line;
-    bool isDef; //se é a linha onde foi definido
-    bool isEnd; //se é a linha onde morreu
-};
-
-struct VariableRanges {
-    std::string varName;
-    std::vector<std::vector<LiveRangePoint>> ranges;
-};
 
 class DataLoader {
 public:
