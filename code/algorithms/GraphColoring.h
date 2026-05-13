@@ -13,6 +13,7 @@ struct ColoringResult {
     bool success;                               ///< True if coloring succeeded with no forced spills
     int numColorsUsed;                          ///< Number of distinct registers actually assigned
     std::unordered_map<int, int> webToRegister; ///< web.id -> register index (-1 = memory)
+    std::vector<int> spilledWebs;              ///< IDs of webs that were spilled
 };
 
 /**

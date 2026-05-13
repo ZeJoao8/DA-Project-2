@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "../algorithms/GraphColoring.h"
+#include "../algorithms/SpillingAlgorithm.h"
 #include "../utils/DataLoader.h"
 #include "../utils/OutputWriter.h"
 #include <iomanip>
@@ -230,7 +231,6 @@ void Menu::run() {
     }
 
       // ── 5. Run Basic Register Allocation ──────────────────────
-      // ── 5. Run Basic Register Allocation ──────────────────────
     case 5: {
       if (!dataLoaded) {
         std::cerr << "Error: You must load data first (Option 1).\n";
@@ -278,14 +278,40 @@ void Menu::run() {
       break;
     }
     // ── 6. Run Allocation with Web Spilling ───────────────────
-    case 6:
+    case 6: {
       if (!dataLoaded) {
         std::cerr << "Error: You must load data first (Option 1).\n";
         break;
       }
+      if (outputFilePath.empty()) {
+        std::cout << "Enter output file path: ";
+        std::getline(std::cin, outputFilePath);
+      }
+
       std::cout << "Running Allocation with Web Spilling...\n";
-      // TODO: Implement spilling algorithm
+      std::cout << "Available registers: " << registerConfig.numRegisters << "\n";
+
+      // Re-garantir que webs e grafo estão construídos
+      if (webs.empty()) { webs = GraphBuilder::buildWebs(rangesMap); }
+      if (!graphBuilt) { interferenceGraph = GraphBuilder::buildInterferenceGraph(webs); graphBuilt = true; }
+
+      ColoringResult spillResult = SpillingAlgorithm::run(
+          interferenceGraph, webs, registerConfig.numRegisters,
+          registerConfig.algorithmParam);
+
+      if (OutputWriter::writeResult(outputFilePath, webs, spillResult, registerConfig.numRegisters)) {
+        std::cout << "Results with Spilling successfully written to " << outputFilePath << "\n";
+      } else {
+        std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+      }
+
+      if (!spillResult.success) {
+        std::cout << "Note: Some webs were spilled to memory (labeled 'M' in output).\n";
+      } else {
+        std::cout << "Allocation successful using " << spillResult.numColorsUsed << " register(s).\n";
+      }
       break;
+    }
 
     // ── 7. Run Allocation with Web Splitting ──────────────────
     case 7:

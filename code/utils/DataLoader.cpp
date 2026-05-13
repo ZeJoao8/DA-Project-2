@@ -70,6 +70,7 @@ RegisterConfig DataLoader::loadRegisters(const std::string& filename) {
                     }
                 } else if (key == "algorithm") {
                     size_t commaPos = valueStr.find(',');
+                    
                     if (commaPos != std::string::npos) {
                         config.algorithmName = trim(valueStr.substr(0, commaPos));
                         try {
@@ -80,6 +81,10 @@ RegisterConfig DataLoader::loadRegisters(const std::string& filename) {
                         }
                     } else {
                         config.algorithmName = valueStr;
+
+                        if (config.algorithmName == "spilling" && commaPos == std::string::npos) {
+                            throw std::runtime_error("Spilling requires a parameter K (e.g. spilling, 2)");
+                        }
                     }
                     linesParsed++;
                 }
