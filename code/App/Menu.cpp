@@ -231,7 +231,6 @@ void Menu::run() {
     }
 
       // ── 5. Run Basic Register Allocation ──────────────────────
-      // ── 5. Run Basic Register Allocation ──────────────────────
     case 5: {
       if (!dataLoaded) {
         std::cerr << "Error: You must load data first (Option 1).\n";

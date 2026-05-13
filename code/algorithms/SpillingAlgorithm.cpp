@@ -6,12 +6,13 @@
 #include <unordered_set>
 
 ColoringResult
-SpillingAlgorithm::run(const Graph<int> &graph, const std::vector<Web> &webs,
+SpillingAlgorithm::run(const Graph<int> &graph, 
+                       const std::vector<Web> &webs,
                        int numRegisters,
-                       int maxSpills) // <- estava em falta no .cpp
+                       int maxSpills) 
 {
   ColoringResult result;
-  result.success = false;
+  result.success = true;
   result.numColorsUsed = 0;
 
   std::unordered_map<int, const Web *> webMap;
@@ -42,12 +43,14 @@ SpillingAlgorithm::run(const Graph<int> &graph, const std::vector<Web> &webs,
   while (!active.empty()) {
     bool removed = false;
 
-    for (auto it = active.begin(); it != active.end(); ++it) {
+    for (auto it = active.begin(); it != active.end();) {
       if (getActiveDegree(*it) < numRegisters) {
         colorStack.push(*it);
-        active.erase(it);
+        it = active.erase(it);
         removed = true;
         break;
+      } else {
+        ++it;
       }
     }
 
@@ -62,15 +65,17 @@ SpillingAlgorithm::run(const Graph<int> &graph, const std::vector<Web> &webs,
       std::vector<int> activeVec(active.begin(), active.end());
       int candidate = selectSpillCandidate(graph, webs, activeVec);
 
-      if (candidate == -1) {
-        return result; // success = false
+      if (candidate == -1 || !webMap.count(candidate)) {
+        return result; // failure
       }
 
       forcedSpills.push_back(candidate);
       active.erase(candidate);
       result.webToRegister[candidate] = -1;
-      std::cout << "  Spilling web" << candidate << " ["
-                << webMap[candidate]->originalVariable << "] to memory.\n";
+
+      std::cout << "  Spilling web " << candidate << " ["
+                << webMap.at(candidate)->originalVariable
+                << "] to memory.\n";
     }
   }
 
@@ -115,7 +120,6 @@ SpillingAlgorithm::run(const Graph<int> &graph, const std::vector<Web> &webs,
     result.webToRegister[id] = color;
 
   result.spilledWebs = forcedSpills;
-  result.success = true; // só chega aqui se coloriu com sucesso
   return result;
 }
 
@@ -146,8 +150,9 @@ int SpillingAlgorithm::selectSpillCandidate(const Graph<int> &graph,
         degree++;
     if (degree == 0)
       degree = 1;
-
-    double cost = calculateSpillCost(*activeWebs[id]);
+    auto it = activeWebs.find(id);
+    if (it == activeWebs.end()) continue;
+    double cost = calculateSpillCost(*it->second);
     double metric = cost / degree;
 
     if (metric < minMetric) {
