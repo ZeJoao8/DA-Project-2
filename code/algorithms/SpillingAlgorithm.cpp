@@ -59,6 +59,7 @@ SpillingAlgorithm::run(const Graph<int> &graph,
       if ((int)forcedSpills.size() >= maxSpills) {
         std::cerr << "WARNING: Spill limit of " << maxSpills
                   << " exceeded. Allocation not possible.\n";
+        result.success = false;
         return result; // success = false
       }
 
