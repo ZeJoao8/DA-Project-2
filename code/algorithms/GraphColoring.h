@@ -14,6 +14,7 @@ struct ColoringResult {
     int numColorsUsed;                          ///< Number of distinct registers actually assigned
     std::unordered_map<int, int> webToRegister; ///< web.id -> register index (-1 = memory)
     std::vector<int> spilledWebs;              ///< IDs of webs that were spilled
+    std::vector<Web> splitWebs;                ///< Updated webs after splitting (empty if no splitting)
 };
 
 /**

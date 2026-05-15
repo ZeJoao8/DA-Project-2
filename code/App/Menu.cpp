@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include "../algorithms/GraphColoring.h"
 #include "../algorithms/SpillingAlgorithm.h"
+#include "../algorithms/Splitting.h"
 #include "../utils/DataLoader.h"
 #include "../utils/OutputWriter.h"
 #include <iomanip>
@@ -21,10 +22,7 @@ void Menu::run() {
     std::cout << "2. Display Loaded Data (ranges and registers)\n";
     std::cout << "3. Build and Display Webs\n";
     std::cout << "4. Build and Display Interference Graph\n";
-    std::cout << "5. Run Basic Register Allocation\n";
-    std::cout << "6. Run Allocation with Web Spilling\n";
-    std::cout << "7. Run Allocation with Web Splitting\n";
-    std::cout << "8. Run Free Algorithm\n";
+    std::cout << "5. Run Register Allocation\n";
     std::cout << "0. Exit\n";
     std::cout << "Enter your choice: ";
 
@@ -230,14 +228,14 @@ void Menu::run() {
       break;
     }
 
-      // ── 5. Run Basic Register Allocation ──────────────────────
+      // ── 5. Run Register Allocation ─────────────────────────────
     case 5: {
       if (!dataLoaded) {
         std::cerr << "Error: You must load data first (Option 1).\n";
         break;
       }
 
-      // Garantir que webs e grafo estão construídos
+      // Ensure webs and interference graph are built
       if (webs.empty()) {
         webs = GraphBuilder::buildWebs(rangesMap);
       }
@@ -251,87 +249,83 @@ void Menu::run() {
         std::getline(std::cin, outputFilePath);
       }
 
-      std::cout << "\nRunning Basic Register Allocation...\n";
-      std::cout << "Available registers: " << registerConfig.numRegisters
-                << "\n";
+      std::cout << "\nAlgorithm: " << registerConfig.algorithmName
+                << " | Registers: " << registerConfig.numRegisters
+                << " | Param: " << registerConfig.algorithmParam << "\n";
 
-      // Correr o algoritmo (sem spills externos)
-      ColoringResult result = GraphColoring::run(interferenceGraph, webs,
-                                                 registerConfig.numRegisters,
-                                                 {} // sem spills forçados
-      );
+      // Always run basic coloring first
+      std::cout << "Running Basic Register Allocation...\n";
+      ColoringResult result = GraphColoring::run(
+          interferenceGraph, webs, registerConfig.numRegisters, {});
 
-      if (OutputWriter::writeResult(outputFilePath, webs, result, registerConfig.numRegisters)) {
-        std::cout << "Results successfully written to " << outputFilePath << "\n";
-      } else {
-        std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-      }
-
-      if (!result.success) {
-        std::cerr << "WARNING: Register allocation with "
-                  << registerConfig.numRegisters
-                  << " register(s) was not possible.\n";
-      } else {
+      if (result.success) {
+        // Basic succeeded — print and write output
         std::cout << "Allocation successful using " << result.numColorsUsed
                   << " register(s).\n";
+        if (OutputWriter::writeResult(outputFilePath, webs, result,
+                                      registerConfig.numRegisters)) {
+          std::cout << "Results written to " << outputFilePath << "\n";
+        } else {
+          std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+        }
+      } else {
+        // Basic failed — dispatch based on algorithmName
+        if (registerConfig.algorithmName == "basic") {
+          std::cerr << "WARNING: Register allocation not possible with "
+                    << registerConfig.numRegisters << " register(s).\n";
+          // Write output with all webs assigned to M
+          if (OutputWriter::writeResult(outputFilePath, webs, result,
+                                        registerConfig.numRegisters)) {
+            std::cout << "Results written to " << outputFilePath << "\n";
+          } else {
+            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+          }
+
+        } else if (registerConfig.algorithmName == "spilling") {
+          std::cout << "Basic allocation failed. Attempting spilling...\n";
+          ColoringResult spillResult = SpillingAlgorithm::run(
+              interferenceGraph, webs, registerConfig.numRegisters,
+              registerConfig.algorithmParam);
+
+          if (spillResult.success) {
+            std::cout << "Spilling succeeded using " << spillResult.numColorsUsed
+                      << " register(s).\n";
+          } else {
+            std::cerr << "WARNING: Spilling failed. Some webs assigned to memory.\n";
+          }
+          if (OutputWriter::writeResult(outputFilePath, webs, spillResult,
+                                        registerConfig.numRegisters)) {
+            std::cout << "Results written to " << outputFilePath << "\n";
+          } else {
+            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+          }
+
+        } else if (registerConfig.algorithmName == "splitting") {
+          std::cout << "Basic allocation failed. Attempting splitting...\n";
+          ColoringResult splitResult = Splitting::runWithSplitting(
+              interferenceGraph, webs, registerConfig.numRegisters,
+              registerConfig.algorithmParam);
+
+          if (splitResult.success) {
+            std::cout << "Splitting succeeded using " << splitResult.numColorsUsed
+                      << " register(s).\n";
+          } else {
+            std::cerr << "WARNING: Splitting failed. Some webs assigned to memory.\n";
+          }
+          if (OutputWriter::writeResult(outputFilePath, splitResult.splitWebs, splitResult,
+                                        registerConfig.numRegisters)) {
+            std::cout << "Results written to " << outputFilePath << "\n";
+          } else {
+            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+          }
+
+        } else {
+          std::cerr << "ERROR: Unknown algorithm '" << registerConfig.algorithmName
+                    << "'. Supported: basic, spilling, splitting.\n";
+        }
       }
       break;
     }
-    // ── 6. Run Allocation with Web Spilling ───────────────────
-    case 6: {
-      if (!dataLoaded) {
-        std::cerr << "Error: You must load data first (Option 1).\n";
-        break;
-      }
-      if (outputFilePath.empty()) {
-        std::cout << "Enter output file path: ";
-        std::getline(std::cin, outputFilePath);
-      }
-
-      std::cout << "Running Allocation with Web Spilling...\n";
-      std::cout << "Available registers: " << registerConfig.numRegisters << "\n";
-
-      // Re-garantir que webs e grafo estão construídos
-      if (webs.empty()) { webs = GraphBuilder::buildWebs(rangesMap); }
-      if (!graphBuilt) { interferenceGraph = GraphBuilder::buildInterferenceGraph(webs); graphBuilt = true; }
-
-      ColoringResult spillResult = SpillingAlgorithm::run(
-          interferenceGraph, webs, registerConfig.numRegisters,
-          registerConfig.algorithmParam);
-
-      if (OutputWriter::writeResult(outputFilePath, webs, spillResult, registerConfig.numRegisters)) {
-        std::cout << "Results with Spilling successfully written to " << outputFilePath << "\n";
-      } else {
-        std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-      }
-
-      if (!spillResult.success) {
-        std::cout << "Note: Some webs were spilled to memory (labeled 'M' in output).\n";
-      } else {
-        std::cout << "Allocation successful using " << spillResult.numColorsUsed << " register(s).\n";
-      }
-      break;
-    }
-
-    // ── 7. Run Allocation with Web Splitting ──────────────────
-    case 7:
-      if (!dataLoaded) {
-        std::cerr << "Error: You must load data first (Option 1).\n";
-        break;
-      }
-      std::cout << "Running Allocation with Web Splitting...\n";
-      // TODO: Implement splitting algorithm
-      break;
-
-    // ── 8. Run Free Algorithm ─────────────────────────────────
-    case 8:
-      if (!dataLoaded) {
-        std::cerr << "Error: You must load data first (Option 1).\n";
-        break;
-      }
-      std::cout << "Running Free Algorithm...\n";
-      // TODO: Implement free algorithm
-      break;
 
     // ── 0. Exit ───────────────────────────────────────────────
     case 0:
@@ -339,7 +333,7 @@ void Menu::run() {
       break;
 
     default:
-      std::cerr << "Invalid choice. Please select a valid option (0-8).\n";
+      std::cerr << "Invalid choice. Please select a valid option (0-5).\n";
       break;
     }
   }
