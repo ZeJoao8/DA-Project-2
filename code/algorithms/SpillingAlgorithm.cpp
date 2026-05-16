@@ -5,12 +5,9 @@
 #include <stack>
 #include <unordered_set>
 
-ColoringResult
-SpillingAlgorithm::run(const Graph<int> &graph, 
-                       const std::vector<Web> &webs,
-                       int numRegisters,
-                       int maxSpills) 
-{
+ColoringResult SpillingAlgorithm::run(const Graph<int> &graph,
+                                      const std::vector<Web> &webs,
+                                      int numRegisters, int maxSpills) {
   ColoringResult result;
   result.success = true;
   result.numColorsUsed = 0;
@@ -25,49 +22,73 @@ SpillingAlgorithm::run(const Graph<int> &graph,
   for (const auto &web : webs)
     active.insert(web.id);
 
-  auto getActiveDegree = [&](int id) -> int {
-    auto *v = graph.findVertex(id);
-    if (!v)
-      return 0;
+  std::unordered_map<int, int> currentDegrees;
+  std::vector<int> trivialNodes;
+
+  // Fase 0 Inicialização: O(V + E)
+  for (int id : active) {
     int deg = 0;
-    for (auto *edge : v->getAdj())
-      if (active.count(edge->getDest()->getInfo()))
-        deg++;
-    return deg;
-  };
+    auto *v = graph.findVertex(id);
+    if (v) {
+      for (auto *edge : v->getAdj()) {
+        if (active.count(edge->getDest()->getInfo())) {
+          deg++;
+        }
+      }
+    }
+    currentDegrees[id] = deg;
+    if (deg < numRegisters) {
+      trivialNodes.push_back(id);
+    }
+  }
 
   std::stack<int> colorStack;
   std::vector<int> forcedSpills;
 
-  // Phase 1 - Simplification
+  // Phase 1 - Simplification O(V + E)
   while (!active.empty()) {
-    bool removed = false;
+    if (!trivialNodes.empty()) {
+      // Retira um nó trivial da lista
+      int id = trivialNodes.back();
+      trivialNodes.pop_back();
 
-    for (auto it = active.begin(); it != active.end();) {
-      if (getActiveDegree(*it) < numRegisters) {
-        colorStack.push(*it);
-        it = active.erase(it);
-        removed = true;
-        break;
-      } else {
-        ++it;
+      // Pode já ter sido removido por um Spill anterior
+      if (!active.count(id))
+        continue;
+
+      colorStack.push(id);
+      active.erase(id);
+
+      // Decrementa o grau dos vizinhos ainda ativos
+      auto *v = graph.findVertex(id);
+      if (v) {
+        for (auto *edge : v->getAdj()) {
+          int neighborId = edge->getDest()->getInfo();
+          if (active.count(neighborId)) {
+            currentDegrees[neighborId]--;
+            // Se o vizinho acabou de ficar trivial, adicionamos à lista
+            if (currentDegrees[neighborId] == numRegisters - 1) {
+              trivialNodes.push_back(neighborId);
+            }
+          }
+        }
       }
-    }
-
-    if (!removed && !active.empty()) {
+    } else {
+      // Nenhum nó com grau < K. Fazer spill.
       // Verificar limite K
       if ((int)forcedSpills.size() >= maxSpills) {
         std::cerr << "WARNING: Spill limit of " << maxSpills
                   << " exceeded. Allocation not possible.\n";
         result.success = false;
-        return result; // success = false
+        return result;
       }
 
       std::vector<int> activeVec(active.begin(), active.end());
       int candidate = selectSpillCandidate(graph, webs, activeVec);
 
       if (candidate == -1 || !webMap.count(candidate)) {
-        return result; // failure
+        result.success = false;
+        return result;
       }
 
       forcedSpills.push_back(candidate);
@@ -75,8 +96,22 @@ SpillingAlgorithm::run(const Graph<int> &graph,
       result.webToRegister[candidate] = -1;
 
       std::cout << "  Spilling web " << candidate << " ["
-                << webMap.at(candidate)->originalVariable
-                << "] to memory.\n";
+                << webMap.at(candidate)->originalVariable << "] to memory.\n";
+
+      // IMPORTANT: Ao retirar o spill do grafo ativo, os vizinhos perdem 1 grau
+      auto *v = graph.findVertex(candidate);
+      if (v) {
+        for (auto *edge : v->getAdj()) {
+          int neighborId = edge->getDest()->getInfo();
+          if (active.count(neighborId)) {
+            currentDegrees[neighborId]--;
+            // Se o vizinho do spill ficou agora trivial, junta à festa!
+            if (currentDegrees[neighborId] == numRegisters - 1) {
+              trivialNodes.push_back(neighborId);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -110,6 +145,7 @@ SpillingAlgorithm::run(const Graph<int> &graph,
     if (color == -1) {
       // Não devia acontecer se a fase 1 correu bem
       std::cerr << "ERROR: Could not assign color to web " << id << "\n";
+      result.success = false;
       return result; // success = false
     }
 
@@ -152,7 +188,8 @@ int SpillingAlgorithm::selectSpillCandidate(const Graph<int> &graph,
     if (degree == 0)
       degree = 1;
     auto it = activeWebs.find(id);
-    if (it == activeWebs.end()) continue;
+    if (it == activeWebs.end())
+      continue;
     double cost = calculateSpillCost(*it->second);
     double metric = cost / degree;
 
