@@ -2,6 +2,7 @@
 #include "../utils/DataLoader.h"
 #include "../utils/GraphBuilder.h"
 #include "../algorithms/GraphColoring.h"
+#include "../algorithms/FreeAlgorithm.h"
 #include "../utils/OutputWriter.h"
 #include <iostream>
 
@@ -31,9 +32,16 @@ namespace BatchMode {
             // Build Interference Graph
             Graph<int> interferenceGraph = GraphBuilder::buildInterferenceGraph(webs);
             
-            // Run Basic Register Allocation
-            std::cout << "Running Basic Register Allocation...\n";
-            ColoringResult result = GraphColoring::run(interferenceGraph, webs, registerConfig.numRegisters, {});
+            // Run Register Allocation based on algorithm name
+            ColoringResult result;
+            if (registerConfig.algorithmName == "free") {
+                std::cout << "Running Kempe Chain Register Allocation (free)...\n";
+                result = FreeAlgorithm::run(interferenceGraph, webs, registerConfig.numRegisters);
+            } else {
+                // Default: basic greedy coloring
+                std::cout << "Running Basic Register Allocation...\n";
+                result = GraphColoring::run(interferenceGraph, webs, registerConfig.numRegisters, {});
+            }
 
             // Write Results
             if (OutputWriter::writeResult(outputFile, webs, result, registerConfig.numRegisters)) {

@@ -1,0 +1,3 @@
+# Register configuration for free algorithm test
+registers: 2
+algorithm: free

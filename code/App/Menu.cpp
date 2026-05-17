@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "../algorithms/GraphColoring.h"
+#include "../algorithms/FreeAlgorithm.h"
 #include "../algorithms/SpillingAlgorithm.h"
 #include "../algorithms/Splitting.h"
 #include "../utils/DataLoader.h"
@@ -319,9 +320,27 @@ void Menu::run() {
             std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
           }
 
+        } else if (registerConfig.algorithmName == "free") {
+          std::cout << "Basic allocation failed. Attempting Kempe Chain rescue (free)...\n";
+          ColoringResult freeResult = FreeAlgorithm::run(
+              interferenceGraph, webs, registerConfig.numRegisters);
+
+          if (freeResult.success) {
+            std::cout << "Free allocation succeeded using " << freeResult.numColorsUsed
+                      << " register(s).\n";
+          } else {
+            std::cerr << "WARNING: Free allocation could not avoid all spills.\n";
+          }
+          if (OutputWriter::writeResult(outputFilePath, webs, freeResult,
+                                        registerConfig.numRegisters)) {
+            std::cout << "Results written to " << outputFilePath << "\n";
+          } else {
+            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
+          }
+
         } else {
           std::cerr << "ERROR: Unknown algorithm '" << registerConfig.algorithmName
-                    << "'. Supported: basic, spilling, splitting.\n";
+                    << "'. Supported: basic, spilling, splitting, free.\n";
         }
       }
       break;
