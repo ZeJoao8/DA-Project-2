@@ -79,6 +79,8 @@ ColoringResult GraphColoring::run(
             forcedSpills.push_back(candidate);
             active.erase(candidate);
             result.webToRegister[candidate] = -1;
+
+            removed = true; //was missing, and caused infinitish loop if we had to spill
         }
     }
 

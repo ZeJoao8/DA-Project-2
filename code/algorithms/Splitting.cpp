@@ -12,22 +12,12 @@ ColoringResult Splitting::runWithSplitting(
     int maxSplits)
 {
     // ------------------------------------------------------------------
-    // Step 1: Try coloring the original graph directly.
-    // Time Complexity: O(V^2)
-    // ------------------------------------------------------------------
-    ColoringResult result = GraphColoring::run(graph, webs, numRegisters, {});
-    if (result.success) {
-        std::cout << "  Splitting: Coloring succeeded without any splits.\n";
-        result.splitWebs = webs;
-        return result;
-    }
-
-    // ------------------------------------------------------------------
-    // Step 2: Iteratively split webs and retry coloring.
+    // Iteratively split webs and retry coloring.
     // Each round: O(V+E) candidate selection + O(L*W) split point
     //           + O(V^2) graph rebuild + O(V^2) coloring
     // Total: O(maxSplits * (V^2 + L*W))
     // ------------------------------------------------------------------
+    ColoringResult result;
     std::vector<Web> currentWebs = webs;
     Graph<int> currentGraph = GraphBuilder::buildInterferenceGraph(currentWebs);
 
