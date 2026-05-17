@@ -1,10 +1,5 @@
 #include "Menu.h"
-#include "../algorithms/GraphColoring.h"
-#include "../algorithms/FreeAlgorithm.h"
-#include "../algorithms/SpillingAlgorithm.h"
-#include "../algorithms/Splitting.h"
-#include "../io/DataLoader.h"
-#include "../io/OutputWriter.h"
+#include "../core/AllocationEngine.h"
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -163,7 +158,7 @@ void Menu::run() {
       }
 
       std::cout << "\n--- Interference Graph ---\n";
-      std::cout << "Vertices (Webs): " << interferenceGraph.getNumVertex()
+      std::cout << "Total Webs: " << interferenceGraph.getNumVertex()
                 << "\n\n";
 
       // Display each web with its lines
@@ -250,99 +245,7 @@ void Menu::run() {
         std::getline(std::cin, outputFilePath);
       }
 
-      std::cout << "\nAlgorithm: " << registerConfig.algorithmName
-                << " | Registers: " << registerConfig.numRegisters
-                << " | Param: " << registerConfig.algorithmParam << "\n";
-
-      // Always run basic coloring first
-      std::cout << "Running Basic Register Allocation...\n";
-      ColoringResult result = GraphColoring::run(
-          interferenceGraph, webs, registerConfig.numRegisters, {});
-
-      if (result.success) {
-        // Basic succeeded — print and write output
-        std::cout << "Allocation successful using " << result.numColorsUsed
-                  << " register(s).\n";
-        if (OutputWriter::writeResult(outputFilePath, webs, result,
-                                      registerConfig.numRegisters)) {
-          std::cout << "Results written to " << outputFilePath << "\n";
-        } else {
-          std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-        }
-      } else {
-        // Basic failed — dispatch based on algorithmName
-        if (registerConfig.algorithmName == "basic") {
-          std::cerr << "WARNING: Register allocation not possible with "
-                    << registerConfig.numRegisters << " register(s).\n";
-          // Write output with all webs assigned to M
-          if (OutputWriter::writeResult(outputFilePath, webs, result,
-                                        registerConfig.numRegisters)) {
-            std::cout << "Results written to " << outputFilePath << "\n";
-          } else {
-            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-          }
-
-        } else if (registerConfig.algorithmName == "spilling") {
-          std::cout << "Basic allocation failed. Attempting spilling...\n";
-          ColoringResult spillResult = SpillingAlgorithm::run(
-              interferenceGraph, webs, registerConfig.numRegisters,
-              registerConfig.algorithmParam);
-
-          if (spillResult.success) {
-            std::cout << "Spilling succeeded using " << spillResult.numColorsUsed
-                      << " register(s).\n";
-          } else {
-            std::cerr << "WARNING: Spilling failed. Some webs assigned to memory.\n";
-          }
-          if (OutputWriter::writeResult(outputFilePath, webs, spillResult,
-                                        registerConfig.numRegisters)) {
-            std::cout << "Results written to " << outputFilePath << "\n";
-          } else {
-            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-          }
-
-        } else if (registerConfig.algorithmName == "splitting") {
-          std::cout << "Basic allocation failed. Attempting splitting...\n";
-          ColoringResult splitResult = Splitting::runWithSplitting(
-              interferenceGraph, webs, registerConfig.numRegisters,
-              registerConfig.algorithmParam);
-
-          if (splitResult.success) {
-            std::cout << "Splitting succeeded using " << splitResult.numColorsUsed
-                      << " register(s).\n";
-          } else {
-            std::cerr << "WARNING: Splitting failed. Some webs assigned to memory.\n";
-          }
-          if (OutputWriter::writeResult(outputFilePath, splitResult.splitWebs, splitResult,
-                                        registerConfig.numRegisters)) {
-            std::cout << "Results written to " << outputFilePath << "\n";
-          } else {
-            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-          }
-
-        } else if (registerConfig.algorithmName == "free") {
-          std::cout << "Basic allocation failed. Attempting Kempe Chain rescue (free)...\n";
-          ColoringResult freeResult = FreeAlgorithm::run(
-              interferenceGraph, webs, registerConfig.numRegisters);
-
-          if (freeResult.success) {
-            std::cout << "Free allocation succeeded using " << freeResult.numColorsUsed
-                      << " register(s).\n";
-          } else {
-            std::cerr << "WARNING: Free allocation could not avoid all spills.\n";
-          }
-          if (OutputWriter::writeResult(outputFilePath, webs, freeResult,
-                                        registerConfig.numRegisters)) {
-            std::cout << "Results written to " << outputFilePath << "\n";
-          } else {
-            std::cerr << "Error: Could not write results to " << outputFilePath << "\n";
-          }
-
-        } else {
-          std::cerr << "ERROR: Unknown algorithm '" << registerConfig.algorithmName
-                    << "'. Supported: basic, spilling, splitting, free.\n";
-        }
-      }
+      AllocationEngine::runAllocation(interferenceGraph, webs, registerConfig, outputFilePath);
       break;
     }
 

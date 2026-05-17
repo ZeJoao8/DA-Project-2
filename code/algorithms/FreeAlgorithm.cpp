@@ -4,10 +4,8 @@
 #include <queue>
 #include <stack>
 #include <unordered_set>
+#include <unordered_map>
 
-// ---------------------------------------------------------------------------
-// Phase 1 helper: builds the simplification stack exactly like GraphColoring
-// ---------------------------------------------------------------------------
 ColoringResult FreeAlgorithm::run(
     const Graph<int>& graph,
     const std::vector<Web>& webs,
@@ -17,51 +15,72 @@ ColoringResult FreeAlgorithm::run(
     result.success = true;
     result.numColorsUsed = 0;
 
-    // Build active set from all webs
+    // Build active set and vertex lookup map once
     std::unordered_set<int> active;
+    std::unordered_map<int, Vertex<int>*> vertexMap;
+    for (auto* v : graph.getVertexSet()) {
+        vertexMap[v->getInfo()] = v;
+    }
+
     for (const auto& web : webs) {
         active.insert(web.id);
     }
 
-    // Helper: count active-only degree for a node
-    auto getActiveDegree = [&](int id) -> int {
-        auto* v = graph.findVertex(id);
-        if (!v) return 0;
+    // Dynamic degrees and trivial nodes initialization: O(V + E)
+    std::unordered_map<int, int> currentDegrees;
+    std::vector<int> trivialNodes;
+
+    for (int id : active) {
         int deg = 0;
-        for (auto* edge : v->getAdj()) {
-            if (active.count(edge->getDest()->getInfo()))
-                deg++;
-        }
-        return deg;
-    };
-
-    // -----------------------------------------------------------------------
-    // Phase 1 – Simplification: same as GraphColoring::run()
-    // Repeatedly remove nodes with degree < N onto the stack.
-    // If stuck, spill the highest-degree node (same heuristic as basic).
-    // Time Complexity: O(V^2) worst case
-    // -----------------------------------------------------------------------
-    std::stack<int> colorStack;
-    std::vector<int> forcedSpills;
-
-    while (!active.empty()) {
-        bool removed = false;
-
-        for (int id : active) {
-            if (getActiveDegree(id) < numRegisters) {
-                colorStack.push(id);
-                active.erase(id);
-                removed = true;
-                break;
+        auto it = vertexMap.find(id);
+        if (it != vertexMap.end() && it->second != nullptr) {
+            for (auto* edge : it->second->getAdj()) {
+                if (active.count(edge->getDest()->getInfo())) {
+                    deg++;
+                }
             }
         }
+        currentDegrees[id] = deg;
 
-        if (!removed && !active.empty()) {
-            // Optimistic coloring: push candidate onto stack anyway, rather than spilling immediately
+        if (deg < numRegisters) {
+            trivialNodes.push_back(id);
+        }
+    }
+
+    std::stack<int> colorStack;
+
+    // Simplification Phase: O(V + E)
+    while (!active.empty()) {
+        if (!trivialNodes.empty()) {
+            int id = trivialNodes.back();
+            trivialNodes.pop_back();
+
+            if (!active.count(id)) {
+                continue;
+            }
+
+            colorStack.push(id);
+            active.erase(id);
+
+            // Decrement active neighbor degrees
+            auto it = vertexMap.find(id);
+            if (it != vertexMap.end() && it->second != nullptr) {
+                for (auto* edge : it->second->getAdj()) {
+                    int neighborId = edge->getDest()->getInfo();
+                    if (active.count(neighborId)) {
+                        currentDegrees[neighborId]--;
+                        if (currentDegrees[neighborId] == numRegisters - 1) {
+                            trivialNodes.push_back(neighborId);
+                        }
+                    }
+                }
+            }
+        } else {
+            // Optimistic coloring: push highest-degree node onto stack anyway
             int bestCandidate = -1;
             int bestDegree = -1;
             for (int id : active) {
-                int deg = getActiveDegree(id);
+                int deg = currentDegrees[id];
                 if (deg > bestDegree) {
                     bestDegree = deg;
                     bestCandidate = id;
@@ -75,7 +94,20 @@ ColoringResult FreeAlgorithm::run(
 
             colorStack.push(bestCandidate);
             active.erase(bestCandidate);
-            removed = true;
+
+            // Decrement active neighbor degrees of the optimistically pushed node
+            auto it = vertexMap.find(bestCandidate);
+            if (it != vertexMap.end() && it->second != nullptr) {
+                for (auto* edge : it->second->getAdj()) {
+                    int neighborId = edge->getDest()->getInfo();
+                    if (active.count(neighborId)) {
+                        currentDegrees[neighborId]--;
+                        if (currentDegrees[neighborId] == numRegisters - 1) {
+                            trivialNodes.push_back(neighborId);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -83,6 +115,7 @@ ColoringResult FreeAlgorithm::run(
     // Phase 2 – Coloring with Kempe Chain rescue
     // Pop nodes from the stack and assign the lowest free color.
     // If no free color exists, attempt a Kempe Chain swap before spilling.
+    // Use vertexMap for fast lookup of adjacent nodes.
     // Time Complexity: O(V * N^2 * (V + E)) in the worst case
     // -----------------------------------------------------------------------
     std::unordered_map<int, int> colorAssignment;
@@ -92,10 +125,10 @@ ColoringResult FreeAlgorithm::run(
         colorStack.pop();
 
         // Collect colors of already-assigned neighbors
-        auto* v = graph.findVertex(id);
         std::vector<int> neighborColors;
-        if (v) {
-            for (auto* edge : v->getAdj()) {
+        auto itLookup = vertexMap.find(id);
+        if (itLookup != vertexMap.end() && itLookup->second != nullptr) {
+            for (auto* edge : itLookup->second->getAdj()) {
                 int neighborId = edge->getDest()->getInfo();
                 auto it = colorAssignment.find(neighborId);
                 if (it != colorAssignment.end() && it->second >= 0) {

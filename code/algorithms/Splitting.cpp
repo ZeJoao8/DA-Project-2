@@ -3,7 +3,38 @@
 #include <algorithm>
 #include <iostream>
 #include <unordered_set>
+#include <unordered_map>
 #include <limits>
+
+namespace {
+    bool interferes(const Web& a, const Web& b) {
+        std::vector<int> sharedLines;
+        std::set_intersection(a.activeLines.begin(), a.activeLines.end(),
+                              b.activeLines.begin(), b.activeLines.end(),
+                              std::back_inserter(sharedLines));
+
+        // No common lines -> no interference
+        if (sharedLines.empty()) {
+            return false;
+        }
+
+        bool allExceptions = true;
+        for (int L : sharedLines) {
+            bool aUsesBDefs = std::binary_search(a.useLines.begin(), a.useLines.end(), L) &&
+                              std::binary_search(b.defLines.begin(), b.defLines.end(), L);
+            
+            bool bUsesADefs = std::binary_search(b.useLines.begin(), b.useLines.end(), L) &&
+                              std::binary_search(a.defLines.begin(), a.defLines.end(), L);
+
+            if (!aUsesBDefs && !bUsesADefs) {
+                allExceptions = false;
+                break;
+            }
+        }
+
+        return !allExceptions;
+    }
+}
 
 ColoringResult Splitting::runWithSplitting(
     const Graph<int>& graph,
@@ -117,8 +148,24 @@ ColoringResult Splitting::runWithSplitting(
         currentWebs.push_back(webA);
         currentWebs.push_back(webB);
 
-        // (e) Rebuild interference graph with updated webs
-        currentGraph = GraphBuilder::buildInterferenceGraph(currentWebs);
+        // (e) Update interference graph incrementally instead of rebuilding from scratch
+        currentGraph.removeVertex(candidateId);
+        currentGraph.addVertex(webA.id);
+        currentGraph.addVertex(webB.id);
+
+        for (const auto& other : currentWebs) {
+            if (other.id == webA.id || other.id == webB.id) continue;
+            
+            if (interferes(webA, other)) {
+                currentGraph.addBidirectionalEdge(webA.id, other.id, 1.0);
+            }
+            if (interferes(webB, other)) {
+                currentGraph.addBidirectionalEdge(webB.id, other.id, 1.0);
+            }
+        }
+        if (interferes(webA, webB)) {
+            currentGraph.addBidirectionalEdge(webA.id, webB.id, 1.0);
+        }
 
         // (f) Try coloring again
         result = GraphColoring::run(currentGraph, currentWebs, numRegisters, {});

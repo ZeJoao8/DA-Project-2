@@ -1,6 +1,7 @@
 #include "GraphColoring.h"
 #include <stack>
 #include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <iostream>
 
@@ -20,58 +21,82 @@ ColoringResult GraphColoring::run(
         result.webToRegister[id] = -1;
     }
 
-    // Build the active set: all webs not pre-spilled
+    // Build the active set and vertex lookup map once
     std::unordered_set<int> active;
+    std::unordered_map<int, Vertex<int>*> vertexMap;
+    for (auto* v : graph.getVertexSet()) {
+        vertexMap[v->getInfo()] = v;
+    }
+
     for (const auto& web : webs) {
         if (!spilled.count(web.id)) {
             active.insert(web.id);
         }
     }
 
-    // Helper: compute degree of a node counting only active neighbors
-    // Time Complexity: O(degree of node)
-    auto getActiveDegree = [&](int id) -> int {
-        auto* v = graph.findVertex(id);
-        if (!v) return 0;
+    // Dynamic degrees and trivial nodes initialization: O(V + E)
+    std::unordered_map<int, int> currentDegrees;
+    std::vector<int> trivialNodes;
+
+    for (int id : active) {
         int deg = 0;
-        for (auto* edge : v->getAdj()) {
-            int neighborId = edge->getDest()->getInfo();
-            if (active.count(neighborId)) {
-                deg++;
+        auto it = vertexMap.find(id);
+        if (it != vertexMap.end() && it->second != nullptr) {
+            for (auto* edge : it->second->getAdj()) {
+                if (active.count(edge->getDest()->getInfo())) {
+                    deg++;
+                }
             }
         }
-        return deg;
-    };
+        currentDegrees[id] = deg;
 
-    // -------------------------------------------------------
-    // Phase 1 - Simplification: build the coloring stack
-    // Repeatedly remove nodes with degree < N onto the stack.
-    // If stuck (all active nodes have degree >= N), spill one.
-    // Time Complexity: O(V^2) in the worst case
-    // -------------------------------------------------------
+        if (deg < numRegisters) {
+            trivialNodes.push_back(id);
+        }
+    }
+
     std::stack<int> colorStack;
     std::vector<int> forcedSpills; // nodes spilled during simplification
 
+    // Simplification Loop: O(V + E)
     while (!active.empty()) {
-        bool removed = false;
+        if (!trivialNodes.empty()) {
+            int id = trivialNodes.back();
+            trivialNodes.pop_back();
 
-        // Scan for any node with active degree < numRegisters
-        for (int id : active) {
-            if (getActiveDegree(id) < numRegisters) {
-                colorStack.push(id);
-                active.erase(id);
-                removed = true;
-                break; // Restart scan with updated degrees
+            if (!active.count(id)) {
+                continue;
             }
-        }
 
-        if (!removed && !active.empty()) {
-            // All remaining nodes have degree >= N: must spill one
-            std::vector<int> activeVec(active.begin(), active.end());
-            int candidate = selectSpillCandidate(graph, {}, activeVec);
+            colorStack.push(id);
+            active.erase(id);
+
+            // Decrement degrees of active neighbors
+            auto it = vertexMap.find(id);
+            if (it != vertexMap.end() && it->second != nullptr) {
+                for (auto* edge : it->second->getAdj()) {
+                    int neighborId = edge->getDest()->getInfo();
+                    if (active.count(neighborId)) {
+                        currentDegrees[neighborId]--;
+                        if (currentDegrees[neighborId] == numRegisters - 1) {
+                            trivialNodes.push_back(neighborId);
+                        }
+                    }
+                }
+            }
+        } else {
+            // Need to spill a node: pick active node with highest degree
+            int candidate = -1;
+            int maxDeg = -1;
+            for (int id : active) {
+                int deg = currentDegrees[id];
+                if (deg > maxDeg) {
+                    maxDeg = deg;
+                    candidate = id;
+                }
+            }
 
             if (candidate == -1) {
-                // Safety fallback — should not happen
                 result.success = false;
                 break;
             }
@@ -80,7 +105,19 @@ ColoringResult GraphColoring::run(
             active.erase(candidate);
             result.webToRegister[candidate] = -1;
 
-            removed = true; //was missing, and caused infinitish loop if we had to spill
+            // Decrement degrees of active neighbors of the spilled node
+            auto it = vertexMap.find(candidate);
+            if (it != vertexMap.end() && it->second != nullptr) {
+                for (auto* edge : it->second->getAdj()) {
+                    int neighborId = edge->getDest()->getInfo();
+                    if (active.count(neighborId)) {
+                        currentDegrees[neighborId]--;
+                        if (currentDegrees[neighborId] == numRegisters - 1) {
+                            trivialNodes.push_back(neighborId);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -89,12 +126,8 @@ ColoringResult GraphColoring::run(
         result.success = false;
     }
 
-    // -------------------------------------------------------
     // Phase 2 - Coloring: pop stack and assign colors
-    // Each node is guaranteed to have had degree < N when removed,
-    // so a color is always available (unless forced spills exhausted colors).
-    // Time Complexity: O(V * degree)
-    // -------------------------------------------------------
+    // Use vertexMap for fast neighbor lookups!
     std::unordered_map<int, int> colorAssignment;
 
     while (!colorStack.empty()) {
@@ -102,10 +135,10 @@ ColoringResult GraphColoring::run(
         colorStack.pop();
 
         // Collect colors of already-assigned neighbors
-        auto* v = graph.findVertex(id);
         std::vector<int> neighborColors;
-        if (v) {
-            for (auto* edge : v->getAdj()) {
+        auto itLookup = vertexMap.find(id);
+        if (itLookup != vertexMap.end() && itLookup->second != nullptr) {
+            for (auto* edge : itLookup->second->getAdj()) {
                 int neighborId = edge->getDest()->getInfo();
                 auto it = colorAssignment.find(neighborId);
                 if (it != colorAssignment.end() && it->second >= 0) {
@@ -116,7 +149,6 @@ ColoringResult GraphColoring::run(
 
         int color = assignColor(neighborColors, numRegisters);
         if (color == -1) {
-            // Should not happen if Phase 1 worked correctly
             result.success = false;
             colorAssignment[id] = -1;
         } else {
