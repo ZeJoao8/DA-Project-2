@@ -59,7 +59,7 @@ public:
      * @return ColoringResult with success flag and web->register mapping.
      *         result.success is true only if no node was ultimately spilled.
      *
-     * Time Complexity: O(V^2 + V * N^2 * (V + E)) in the worst case
+     * @complexity O(V^2 + V * N^2 * (V + E)) in the worst case
      */
     static ColoringResult run(
         const Graph<int>& graph,
@@ -81,7 +81,7 @@ private:
      * @param c2               Second color in the chain.
      * @return Set of node IDs in the Kempe chain.
      *
-     * Time Complexity: O(V + E)
+     * @complexity O(V + E)
      */
     static std::unordered_set<int> buildKempeChain(
         const Graph<int>& graph,
@@ -105,7 +105,7 @@ private:
      * @param numRegisters     Total number of available registers.
      * @return Freed color index on success, or -1 if no rescue is possible.
      *
-     * Time Complexity: O(N^2 * (V + E)) where N = numRegisters
+     * @complexity O(N^2 * (V + E)) where N = numRegisters
      */
     static int tryKempeRescue(
         const Graph<int>& graph,

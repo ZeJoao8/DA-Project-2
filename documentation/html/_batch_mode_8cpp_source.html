@@ -103,47 +103,50 @@ $(function(){initNavTree('_batch_mode_8cpp_source.html','',''); });
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_batch_mode_8h.html">BatchMode.h</a>&quot;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_data_loader_8h.html">../io/DataLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_allocation_engine_8h.html">../core/AllocationEngine.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_graph_builder_8h.html">../core/GraphBuilder.h</a>&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="_allocation_engine_8h.html">../core/AllocationEngine.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="_data_loader_8h.html">../io/DataLoader.h</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespace_batch_mode.html">   17</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_batch_mode.html">BatchMode</a> {</div>
 <div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespace_batch_mode.html#ab0b041b8df2b0f02a216b050312efe55">   18</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespace_batch_mode.html#ab0b041b8df2b0f02a216b050312efe55">run</a>(<span class="keyword">const</span> std::string&amp; rangesFile, <span class="keyword">const</span> std::string&amp; registersFile, <span class="keyword">const</span> std::string&amp; outputFile) {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;--- Batch Mode Activated ---\n&quot;</span>;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        std::string rPath = <a class="code hl_function" href="class_data_loader.html#af341d27f8dc01283524ef926db1402ad">DataLoader::resolvePath</a>(rangesFile, <span class="stringliteral">&quot;ranges&quot;</span>);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        std::string regPath = <a class="code hl_function" href="class_data_loader.html#af341d27f8dc01283524ef926db1402ad">DataLoader::resolvePath</a>(registersFile, <span class="stringliteral">&quot;registers&quot;</span>);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Ranges File: &quot;</span> &lt;&lt; rPath &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Registers File: &quot;</span> &lt;&lt; regPath &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Output File: &quot;</span> &lt;&lt; outputFile &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------\n&quot;</span>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Loading data...\n&quot;</span>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keyword">auto</span> rangesMap = <a class="code hl_function" href="class_data_loader.html#a5d58052645f0902451b10d4a459f164b">DataLoader::loadRanges</a>(rPath);</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keyword">auto</span> registerConfig = <a class="code hl_function" href="class_data_loader.html#a0f8a70edcacca6c0826ecfde14bbaf38">DataLoader::loadRegisters</a>(regPath);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Successfully loaded &quot;</span> &lt;&lt; rangesMap.size() &lt;&lt; <span class="stringliteral">&quot; variables and &quot;</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                      &lt;&lt; registerConfig.numRegisters &lt;&lt; <span class="stringliteral">&quot; registers.\n&quot;</span>;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="comment">// Build Webs</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            std::vector&lt;Web&gt; webs = <a class="code hl_function" href="class_graph_builder.html#ad93d21ac865b72a6a7ad796e9a643899">GraphBuilder::buildWebs</a>(rangesMap);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Generated &quot;</span> &lt;&lt; webs.size() &lt;&lt; <span class="stringliteral">&quot; webs.\n&quot;</span>;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="comment">// Build Interference Graph</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_class" href="class_graph.html">Graph&lt;int&gt;</a> interferenceGraph = <a class="code hl_function" href="class_graph_builder.html#a8429b7ad1c88eabbbde90ba03e9f2772">GraphBuilder::buildInterferenceGraph</a>(webs);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_function" href="namespace_allocation_engine.html#abdf5a1bc6f73e8e92d24d971c12d7f40">AllocationEngine::runAllocation</a>(interferenceGraph, webs, registerConfig, outputFile);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: Failed during batch mode execution: &quot;</span> &lt;&lt; e.what() &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespace_batch_mode.html#ab0b041b8df2b0f02a216b050312efe55">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespace_batch_mode.html#ab0b041b8df2b0f02a216b050312efe55">run</a>(<span class="keyword">const</span> std::string &amp;rangesFile, <span class="keyword">const</span> std::string &amp;registersFile,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>         <span class="keyword">const</span> std::string &amp;outputFile) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;--- Batch Mode Activated ---\n&quot;</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  std::string rPath = <a class="code hl_function" href="class_data_loader.html#af341d27f8dc01283524ef926db1402ad">DataLoader::resolvePath</a>(rangesFile, <span class="stringliteral">&quot;ranges&quot;</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  std::string regPath = <a class="code hl_function" href="class_data_loader.html#af341d27f8dc01283524ef926db1402ad">DataLoader::resolvePath</a>(registersFile, <span class="stringliteral">&quot;registers&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Ranges File: &quot;</span> &lt;&lt; rPath &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Registers File: &quot;</span> &lt;&lt; regPath &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;Output File: &quot;</span> &lt;&lt; outputFile &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  std::cout &lt;&lt; <span class="stringliteral">&quot;----------------------------\n&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Loading data...\n&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">auto</span> rangesMap = <a class="code hl_function" href="class_data_loader.html#a5d58052645f0902451b10d4a459f164b">DataLoader::loadRanges</a>(rPath);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span> registerConfig = <a class="code hl_function" href="class_data_loader.html#a0f8a70edcacca6c0826ecfde14bbaf38">DataLoader::loadRegisters</a>(regPath);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Successfully loaded &quot;</span> &lt;&lt; rangesMap.size() &lt;&lt; <span class="stringliteral">&quot; variables and &quot;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>              &lt;&lt; registerConfig.numRegisters &lt;&lt; <span class="stringliteral">&quot; registers.\n&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Build Webs</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::vector&lt;Web&gt; webs = <a class="code hl_function" href="class_graph_builder.html#ad93d21ac865b72a6a7ad796e9a643899">GraphBuilder::buildWebs</a>(rangesMap);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Generated &quot;</span> &lt;&lt; webs.size() &lt;&lt; <span class="stringliteral">&quot; webs.\n&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Build Interference Graph</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="class_graph.html">Graph&lt;int&gt;</a> interferenceGraph = <a class="code hl_function" href="class_graph_builder.html#a8429b7ad1c88eabbbde90ba03e9f2772">GraphBuilder::buildInterferenceGraph</a>(webs);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_function" href="namespace_allocation_engine.html#abdf5a1bc6f73e8e92d24d971c12d7f40">AllocationEngine::runAllocation</a>(interferenceGraph, webs, registerConfig,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                    outputFile);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: Failed during batch mode execution: &quot;</span> &lt;&lt; e.what()</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>              &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
 </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>} <span class="comment">// namespace BatchMode</span></div>
 </div>
 <div class="ttc" id="a_allocation_engine_8h_html"><div class="ttname"><a href="_allocation_engine_8h.html">AllocationEngine.h</a></div><div class="ttdoc">Declares AllocationEngine — the central dispatcher for all register allocation algorithms.</div></div>
 <div class="ttc" id="a_batch_mode_8h_html"><div class="ttname"><a href="_batch_mode_8h.html">BatchMode.h</a></div><div class="ttdoc">Declares BatchMode::run() — the non-interactive allocation pipeline.</div></div>

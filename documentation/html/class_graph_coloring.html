@@ -113,7 +113,7 @@ Static Private Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Greedy graph coloring algorithm for register allocation. </p>
 <p>Phase 1 - Simplification: iteratively remove nodes with degree &lt; N onto a stack. If all remaining nodes have degree &gt;= N, spill the highest-degree node. Phase 2 - Coloring: pop stack and assign the lowest available color not used by neighbors.</p>
-<p>Time Complexity: O(V^2) where V = number of webs. </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(V^2) where V = number of webs. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_graph_coloring_8h_source.html#l00043">43</a> of file <a class="el" href="_graph_coloring_8h_source.html">GraphColoring.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -213,7 +213,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_coloring_result.html" title="Result of a graph coloring attempt.">ColoringResult</a> with success flag and web-&gt;register mapping.</dd></dl>
-<p>Time Complexity: O(V^2) </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(V^2) </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_graph_coloring_8cpp_source.html#l00017">17</a> of file <a class="el" href="_graph_coloring_8cpp_source.html">GraphColoring.cpp</a>.</p>
 
@@ -275,7 +275,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_web.html" title="Represents a variable web for register allocation.">Web</a> ID of best candidate, or -1 if none found.</dd></dl>
-<p>Time Complexity: O(V + E) </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(V + E) </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_graph_coloring_8cpp_source.html#l00177">177</a> of file <a class="el" href="_graph_coloring_8cpp_source.html">GraphColoring.cpp</a>.</p>
 

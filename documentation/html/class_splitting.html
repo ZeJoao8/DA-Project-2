@@ -113,7 +113,7 @@ Static Private Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Register allocation via iterative web splitting. </p>
 <p>Attempts graph coloring first. If it fails, iteratively splits the highest-degree web at the point of minimum interference and retries coloring on the rebuilt interference graph, up to a maximum number of splits.</p>
-<p>Overall Time Complexity: O(maxSplits * (V^2 + C)) where V = number of webs and C = cost of <a class="el" href="class_graph_coloring.html#adb083cc31a37e112c1c8d7d01b389d39" title="Run the greedy coloring on the interference graph.">GraphColoring::run()</a>. </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(maxSplits * (V^2 + C)) where V = number of webs and C = cost of <a class="el" href="class_graph_coloring.html#adb083cc31a37e112c1c8d7d01b389d39" title="Run the greedy coloring on the interference graph.">GraphColoring::run()</a>. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_splitting_8h_source.html#l00036">36</a> of file <a class="el" href="_splitting_8h_source.html">Splitting.h</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
@@ -154,7 +154,7 @@ Static Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Index into web.activeLines where the second sub-web begins. Returns -1 if the web cannot be split (fewer than 2 active lines).</dd></dl>
-<p>Time Complexity: O(L * W) where L = |web.activeLines|, W = |allWebs|. </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(L * W) where L = |web.activeLines|, W = |allWebs|. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_splitting_8cpp_source.html#l00267">267</a> of file <a class="el" href="_splitting_8cpp_source.html">Splitting.cpp</a>.</p>
 
@@ -222,7 +222,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_coloring_result.html" title="Result of a graph coloring attempt.">ColoringResult</a> with success flag and web-&gt;register mapping.</dd></dl>
-<p>Time Complexity: O(maxSplits * (V^2 + E)) where V = |webs|, E = |edges|. </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(maxSplits * (V^2 + E)) where V = |webs|, E = |edges|. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_splitting_8cpp_source.html#l00063">63</a> of file <a class="el" href="_splitting_8cpp_source.html">Splitting.cpp</a>.</p>
 
@@ -279,7 +279,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_web.html" title="Represents a variable web for register allocation.">Web</a> ID of the highest-degree web, or -1 if the graph is empty.</dd></dl>
-<p>Time Complexity: O(V + E) </p>
+<dl class="section note"><dt>Note</dt><dd><b>Time Complexity:</b> O(V + E) </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_splitting_8cpp_source.html#l00224">224</a> of file <a class="el" href="_splitting_8cpp_source.html">Splitting.cpp</a>.</p>
 

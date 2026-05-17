@@ -30,7 +30,7 @@
  * coloring on the rebuilt interference graph, up to a maximum number
  * of splits.
  *
- * Overall Time Complexity: O(maxSplits * (V^2 + C))
+ * @complexity O(maxSplits * (V^2 + C))
  *   where V = number of webs and C = cost of GraphColoring::run().
  */
 class Splitting {
@@ -53,7 +53,7 @@ public:
      * @param maxSplits    Maximum number of webs that can be split.
      * @return ColoringResult with success flag and web->register mapping.
      *
-     * Time Complexity: O(maxSplits * (V^2 + E)) where V = |webs|, E = |edges|.
+     * @complexity O(maxSplits * (V^2 + E)) where V = |webs|, E = |edges|.
      */
     static ColoringResult runWithSplitting(
         const Graph<int>& graph,
@@ -73,7 +73,7 @@ private:
      * @param webs  Current list of webs (used to restrict candidates).
      * @return Web ID of the highest-degree web, or -1 if the graph is empty.
      *
-     * Time Complexity: O(V + E)
+     * @complexity O(V + E)
      */
     static int selectSplitCandidate(
         const Graph<int>& graph,
@@ -92,7 +92,7 @@ private:
      * @return Index into web.activeLines where the second sub-web begins.
      *         Returns -1 if the web cannot be split (fewer than 2 active lines).
      *
-     * Time Complexity: O(L * W) where L = |web.activeLines|, W = |allWebs|.
+     * @complexity O(L * W) where L = |web.activeLines|, W = |allWebs|.
      */
     static int findSplitPoint(
         const Web& web,
