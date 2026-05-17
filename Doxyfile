@@ -48,17 +48,17 @@ REFERENCED_BY_RELATION = YES
 #---------------------------------------------------------------------------
 # Graph generation  (requires Graphviz / dot)
 #---------------------------------------------------------------------------
-HAVE_DOT               = YES
+HAVE_DOT               = NO
 DOT_NUM_THREADS        = 0       # auto-detect
-CALL_GRAPH             = YES     # show which functions a function calls
-CALLER_GRAPH           = YES     # show which functions call a function
-CLASS_GRAPH            = YES
-COLLABORATION_GRAPH    = YES
-INCLUDE_GRAPH          = YES
-INCLUDED_BY_GRAPH      = YES
+CALL_GRAPH             = NO      # disable since graphviz is not installed
+CALLER_GRAPH           = NO      # disable since graphviz is not installed
+CLASS_GRAPH            = NO
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO
 UML_LOOK               = NO
 DOT_IMAGE_FORMAT       = svg     # SVG scales better than PNG
-INTERACTIVE_SVG        = YES
+INTERACTIVE_SVG        = NO      # Disabled to allow local file:/// viewing in browsers
 MAX_DOT_GRAPH_DEPTH    = 3
 
 #---------------------------------------------------------------------------
