@@ -5,6 +5,7 @@
 #include "../models/Web.h"
 #include "GraphColoring.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 /**
@@ -41,9 +42,9 @@ private:
    * @param activeIds IDs of webs currently in the graph.
    * @return Web ID of candidate.
    */
-  static int selectSpillCandidate(const Graph<int> &graph,
-                                  const std::vector<Web> &webs,
-                                  const std::vector<int> &activeIds);
+  static int selectSpillCandidate(const std::unordered_set<int> &active,
+                                  const std::unordered_map<int, const Web *> &webMap,
+                                  const std::unordered_map<int, int> &currentDegrees);
 };
 
 #endif // SPILLINGALGORITHM_H
