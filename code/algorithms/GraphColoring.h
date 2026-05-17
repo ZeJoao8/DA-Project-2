@@ -1,3 +1,17 @@
+/**
+ * @file GraphColoring.h
+ * @brief Declares GraphColoring — the baseline greedy graph-coloring allocator,
+ *        and defines the ColoringResult struct shared by all allocation algorithms.
+ *
+ * Algorithm summary (Kempe / Chaitin simplification):
+ *   - **Phase 1 (Simplification)**: iteratively remove nodes with active degree < K
+ *     onto a stack. If all remaining nodes have degree ≥ K, spill the
+ *     highest-degree node.
+ *   - **Phase 2 (Coloring)**: pop the stack and greedily assign the lowest
+ *     available color not yet used by any already-colored neighbor.
+ *
+ */
+
 #ifndef GRAPHCOLORING_H
 #define GRAPHCOLORING_H
 

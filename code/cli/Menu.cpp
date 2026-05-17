@@ -1,3 +1,13 @@
+/**
+ * @file Menu.cpp
+ * @brief Implements the interactive CLI menu for the Register Allocation Tool.
+ *
+ * Each menu option is self-contained within a switch-case block.
+ * State is preserved in Menu member variables so that expensive operations
+ * (web construction, graph building) are not repeated across menu iterations.
+ *
+ */
+
 #include "Menu.h"
 #include "../core/AllocationEngine.h"
 #include <iomanip>

@@ -1,3 +1,12 @@
+/**
+ * @file GraphColoring.cpp
+ * @brief Implements the greedy graph-coloring register allocator (GraphColoring).
+ *
+ * Provides the baseline allocation used as a first-pass attempt before any
+ * fallback strategy (spilling, splitting, or Kempe rescue) is invoked.
+ *
+ */
+
 #include "GraphColoring.h"
 #include <stack>
 #include <unordered_set>

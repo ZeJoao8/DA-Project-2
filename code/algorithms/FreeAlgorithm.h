@@ -1,3 +1,22 @@
+/**
+ * @file FreeAlgorithm.h
+ * @brief Declares FreeAlgorithm — a register allocator that uses Kempe Chain
+ *        swaps as a last-resort rescue before falling back to spilling.
+ *
+ * Algorithm overview:
+ *   - **Phase 1 (Simplification)**: same as GraphColoring — remove trivially
+ *     colorable nodes; push non-trivial nodes optimistically onto the stack.
+ *   - **Phase 2 (Coloring with rescue)**: pop and assign greedily. When a node
+ *     is stuck (all K registers taken by neighbors), attempt a Kempe Chain
+ *     swap to free a color. If rescue fails, the node is spilled.
+ *
+ * A *Kempe Chain* for colors (c1, c2) starting at node A is the maximal
+ * subgraph reachable from A using only c1- and c2-colored nodes. Swapping
+ * c1 &hArr; c2 within the chain is a safe recoloring that does not violate
+ * the graph-coloring invariant, and frees color c1 for the stuck node.
+ *
+ */
+
 #ifndef FREEALGORITHM_H
 #define FREEALGORITHM_H
 

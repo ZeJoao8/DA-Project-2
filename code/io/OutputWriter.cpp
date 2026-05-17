@@ -1,3 +1,12 @@
+/**
+ * @file OutputWriter.cpp
+ * @brief Implements OutputWriter::writeResult().
+ *
+ * Formats the final allocation result into the project-specified
+ * plain-text output and writes it to disk.
+ *
+ */
+
 #include "OutputWriter.h"
 #include <algorithm>
 #include <fstream>

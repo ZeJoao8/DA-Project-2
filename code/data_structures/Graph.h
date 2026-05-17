@@ -1,5 +1,18 @@
+/**
+ * @file Graph.h
+ * @brief Templated adjacency-list graph with Vertex and Edge classes.
+ *
+ * Provides the core data structure used throughout the project to represent
+ * the interference graph. Each vertex stores an info value of type `T`
+ * (here `int`, equal to the web ID) and a list of outgoing edges.
+ *
+ * Originally authored by Gonçalo Leão; updated by the Francisco Lourenço, Rodrigo Roque, José Lopes.
+ *
+ * @author Gonçalo Leão / Francisco Lourenço, Rodrigo Roque, José Lopes
+ */
+
 // Original code by Gonçalo Leão
-// Updated by DA 2024/2025 Team
+// Updated by Francisco Lourenço, Rodrigo Roque, José Lopes
 
 #ifndef DA_TP_CLASSES_GRAPH
 #define DA_TP_CLASSES_GRAPH
@@ -18,136 +31,234 @@ class Edge;
 
 /************************* Vertex  **************************/
 
+/**
+ * @brief Represents a vertex (node) in the graph.
+ *
+ * Stores the vertex info value, outgoing/incoming edge lists, and a set of
+ * auxiliary fields used by graph algorithms (BFS visited flag, DFS/Tarjan
+ * low-link numbers, Dijkstra distance, topological sort indegree, etc.).
+ *
+ * @tparam T Type of the info value stored in each vertex.
+ */
 template <class T>
 class Vertex {
 public:
-    Vertex(T in);
-    bool operator<(Vertex<T> & vertex) const; // // required by MutablePriorityQueue
+    Vertex(T in); ///< @brief Constructs a vertex with the given info value. @complexity O(1)
+    bool operator<(Vertex<T> & vertex) const; ///< @brief Comparison by `dist` field, required by MutablePriorityQueue.
 
-    T getInfo() const;
-    std::vector<Edge<T> *> getAdj() const;
-    bool isVisited() const;
-    bool isProcessing() const;
-    unsigned int getIndegree() const;
-    double getDist() const;
-    Edge<T> *getPath() const;
-    std::vector<Edge<T> *> getIncoming() const;
+    T getInfo() const;                              ///< @brief Returns the vertex info. @complexity O(1)
+    std::vector<Edge<T> *> getAdj() const;          ///< @brief Returns the list of outgoing edges. @complexity O(1)
+    bool isVisited() const;                         ///< @brief Returns the visited flag. @complexity O(1)
+    bool isProcessing() const;                      ///< @brief Returns the processing flag (DFS cycle detection). @complexity O(1)
+    unsigned int getIndegree() const;               ///< @brief Returns the indegree (for topological sort). @complexity O(1)
+    double getDist() const;                         ///< @brief Returns the distance estimate (Dijkstra / Prim). @complexity O(1)
+    Edge<T> *getPath() const;                       ///< @brief Returns the predecessor edge on the shortest-path tree. @complexity O(1)
+    std::vector<Edge<T> *> getIncoming() const;     ///< @brief Returns the list of incoming edges. @complexity O(1)
 
-    void setInfo(T info);
-    void setVisited(bool visited);
-    void setProcessing(bool processing);
+    void setInfo(T info);                           ///< @brief Sets the vertex info. @complexity O(1)
+    void setVisited(bool visited);                  ///< @brief Sets the visited flag. @complexity O(1)
+    void setProcessing(bool processing);            ///< @brief Sets the processing flag. @complexity O(1)
 
-    int getLow() const;
-    void setLow(int value);
-    int getNum() const;
-    void setNum(int value);
+    int getLow() const;                             ///< @brief Returns the Tarjan low-link value. @complexity O(1)
+    void setLow(int value);                         ///< @brief Sets the Tarjan low-link value. @complexity O(1)
+    int getNum() const;                             ///< @brief Returns the Tarjan discovery number. @complexity O(1)
+    void setNum(int value);                         ///< @brief Sets the Tarjan discovery number. @complexity O(1)
 
-    void setIndegree(unsigned int indegree);
-    void setDist(double dist);
-    void setPath(Edge<T> *path);
+    void setIndegree(unsigned int indegree);        ///< @brief Sets the indegree counter. @complexity O(1)
+    void setDist(double dist);                      ///< @brief Sets the distance estimate. @complexity O(1)
+    void setPath(Edge<T> *path);                    ///< @brief Sets the predecessor edge. @complexity O(1)
+
+    /**
+     * @brief Adds an outgoing edge from this vertex to @p dest with weight @p w.
+     * @param dest Destination vertex pointer.
+     * @param w    Edge weight.
+     * @return Pointer to the newly created Edge.
+     * @complexity O(1)
+     */
     Edge<T> * addEdge(Vertex<T> *dest, double w);
+
+    /**
+     * @brief Removes the outgoing edge to the vertex with info @p in.
+     * @param in Info of the destination vertex to disconnect.
+     * @return `true` if at least one edge was removed, `false` if none found.
+     * @complexity O(deg(v)) where deg(v) is the out-degree of this vertex.
+     */
     bool removeEdge(T in);
+
+    /**
+     * @brief Removes all outgoing edges from this vertex.
+     * @complexity O(deg(v))
+     */
     void removeOutgoingEdges();
 
     friend class MutablePriorityQueue<Vertex>;
 protected:
-    T info;                // info node
-    std::vector<Edge<T> *> adj;  // outgoing edges
+    T info;                                ///< Info stored in the vertex (e.g., web ID).
+    std::vector<Edge<T> *> adj;            ///< Outgoing edge list.
 
     // auxiliary fields
-    bool visited = false; // used by DFS, BFS, Prim ...
-    bool processing = false; // used by isDAG (in addition to the visited attribute)
-    int low = -1, num = -1; // used by SCC Tarjan
-    unsigned int indegree; // used by topsort
-    double dist = 0;
-    Edge<T> *path = nullptr;
+    bool visited = false;                  ///< Visited flag used by DFS/BFS.
+    bool processing = false;               ///< Processing flag used by isDAG cycle detection.
+    int low = -1, num = -1;                ///< Tarjan SCC low-link and discovery numbers.
+    unsigned int indegree;                 ///< Indegree counter used by topological sort.
+    double dist = 0;                       ///< Distance estimate used by Dijkstra/Prim.
+    Edge<T> *path = nullptr;               ///< Predecessor edge on the shortest-path tree.
+    std::vector<Edge<T> *> incoming;       ///< Incoming edge list.
+    int queueIndex = 0;                    ///< Index used by MutablePriorityQueue.
 
-    std::vector<Edge<T> *> incoming; // incoming edges
-
-    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
-
+    /**
+     * @brief Deletes an edge object and removes it from the destination's incoming list.
+     * @param edge Pointer to the edge to delete.
+     * @complexity O(deg_in(dest)) where deg_in is the in-degree of the destination.
+     */
     void deleteEdge(Edge<T> *edge);
 };
 
 /********************** Edge  ****************************/
 
+/**
+ * @brief Represents a directed weighted edge in the graph.
+ *
+ * Stores a pointer to the destination vertex, the edge weight/capacity,
+ * and auxiliary fields for flow algorithms and bidirectional edge pairing.
+ *
+ * @tparam T Type of the vertex info value.
+ */
 template <class T>
 class Edge {
 public:
     Edge(Vertex<T> *orig, Vertex<T> *dest, double w);
 
-    Vertex<T> * getDest() const;
-    double getWeight() const;
-    bool isSelected() const;
-    Vertex<T> * getOrig() const;
-    Edge<T> *getReverse() const;
-    double getFlow() const;
+    Vertex<T> * getDest() const;    ///< @brief Returns the destination vertex. @complexity O(1)
+    double getWeight() const;       ///< @brief Returns the edge weight / capacity. @complexity O(1)
+    bool isSelected() const;        ///< @brief Returns the selected flag (used by MST algorithms). @complexity O(1)
+    Vertex<T> * getOrig() const;    ///< @brief Returns the origin vertex. @complexity O(1)
+    Edge<T> *getReverse() const;    ///< @brief Returns the reverse edge (bidirectional pairing). @complexity O(1)
+    double getFlow() const;         ///< @brief Returns the flow value (network flow algorithms). @complexity O(1)
 
-    void setSelected(bool selected);
-    void setReverse(Edge<T> *reverse);
-    void setFlow(double flow);
+    void setSelected(bool selected);       ///< @brief Sets the selected flag. @complexity O(1)
+    void setReverse(Edge<T> *reverse);     ///< @brief Sets the reverse edge pointer. @complexity O(1)
+    void setFlow(double flow);             ///< @brief Sets the flow value. @complexity O(1)
 protected:
-    Vertex<T> * dest; // destination vertex
-    double weight; // edge weight, can also be used for capacity
+    Vertex<T> * dest;    ///< Destination vertex pointer.
+    double weight;       ///< Edge weight (or capacity in flow networks).
 
     // auxiliary fields
-    bool selected = false;
-
-    // used for bidirectional edges
-    Vertex<T> *orig;
-    Edge<T> *reverse = nullptr;
-
-    double flow; // for flow-related problems
+    bool selected = false;       ///< Selected flag for MST / spanning-tree algorithms.
+    Vertex<T> *orig;             ///< Origin vertex pointer.
+    Edge<T> *reverse = nullptr;  ///< Reverse edge pointer (used for bidirectional edges).
+    double flow;                 ///< Flow value for max-flow algorithms.
 };
 
 /********************** Graph  ****************************/
 
+/**
+ * @brief Templated directed graph using an adjacency-list representation.
+ *
+ * Vertices are heap-allocated and stored in `vertexSet`. Edges are heap-
+ * allocated inside each Vertex's `adj` list. The graph owns all vertex and
+ * edge memory; the destructor frees it.
+ *
+ * In this project the graph is instantiated as `Graph<int>` where the int
+ * is the web ID (see GraphBuilder).
+ *
+ * @tparam T Type of the info value stored in each vertex.
+ */
 template <class T>
 class Graph {
 public:
     ~Graph();
-    /*
-    * Auxiliary function to find a vertex with a given the content.
-    */
+
+    /**
+     * @brief Finds and returns the vertex whose info equals @p in.
+     * @param in Info value to search for.
+     * @return Pointer to the matching Vertex, or `nullptr` if not found.
+     * @complexity O(V) where V = number of vertices.
+     */
     Vertex<T> *findVertex(const T &in) const;
-    /*
-     *  Adds a vertex with a given content or info (in) to a graph (this).
-     *  Returns true if successful, and false if a vertex with that content already exists.
+
+    /**
+     * @brief Adds a new vertex with info @p in to the graph.
+     * @param in Info value for the new vertex.
+     * @return `true` on success; `false` if a vertex with that info already exists.
+     * @complexity O(V) due to the duplicate check via findVertex().
      */
     bool addVertex(const T &in);
+
+    /**
+     * @brief Removes the vertex with info @p in and all its incident edges.
+     * @param in Info of the vertex to remove.
+     * @return `true` if the vertex was found and removed; `false` otherwise.
+     * @complexity O(V + E) — must remove all incoming edges from neighbours.
+     */
     bool removeVertex(const T &in);
 
-    /*
-     * Adds an edge to a graph (this), given the contents of the source and
-     * destination vertices and the edge weight (w).
-     * Returns true if successful, and false if the source or destination vertex does not exist.
+    /**
+     * @brief Adds a directed edge from @p sourc to @p dest with weight @p w.
+     * @return `true` on success; `false` if either endpoint does not exist.
+     * @complexity O(V) for the two findVertex() calls.
      */
     bool addEdge(const T &sourc, const T &dest, double w);
+
+    /**
+     * @brief Removes the directed edge from @p source to @p dest.
+     * @return `true` if the edge existed and was removed; `false` otherwise.
+     * @complexity O(V + deg(source)).
+     */
     bool removeEdge(const T &source, const T &dest);
+
+    /**
+     * @brief Adds a bidirectional (undirected) edge between @p sourc and @p dest.
+     *
+     * Creates two directed edges and links them via their `reverse` pointers.
+     *
+     * @return `true` on success; `false` if either endpoint does not exist.
+     * @complexity O(V) for the two findVertex() calls.
+     */
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
+    /**
+     * @brief Returns the number of vertices in the graph.
+     * @complexity O(1)
+     */
     int getNumVertex() const;
 
+    /**
+     * @brief Returns the full vertex set.
+     * @return Reference to the internal vector of vertex pointers.
+     * @complexity O(1)
+     */
     std::vector<Vertex<T> *> getVertexSet() const;
 
 
 protected:
-    std::vector<Vertex<T> *> vertexSet;    // vertex set
+    std::vector<Vertex<T> *> vertexSet;  ///< All vertices owned by this graph.
 
-    double ** distMatrix = nullptr;   // dist matrix for Floyd-Warshall
-    int **pathMatrix = nullptr;   // path matrix for Floyd-Warshall
+    double ** distMatrix = nullptr;      ///< Distance matrix for Floyd-Warshall.
+    int **pathMatrix = nullptr;          ///< Path matrix for Floyd-Warshall.
 
-    /*
-     * Finds the index of the vertex with a given content.
+    /**
+     * @brief Returns the index of the vertex with info @p in in vertexSet.
+     * @return Index, or -1 if not found.
+     * @complexity O(V)
      */
     int findVertexIdx(const T &in) const;
-    /**
-    * Auxiliary function to set the "path" field to make a spanning tree.
-    */
-
 };
 
+/**
+ * @brief Frees a 2-D int matrix allocated as `int**`.
+ * @param m Pointer to the matrix.
+ * @param n Number of rows.
+ * @complexity O(n)
+ */
 void deleteMatrix(int **m, int n);
+
+/**
+ * @brief Frees a 2-D double matrix allocated as `double**`.
+ * @param m Pointer to the matrix.
+ * @param n Number of rows.
+ * @complexity O(n)
+ */
 void deleteMatrix(double **m, int n);
 
 

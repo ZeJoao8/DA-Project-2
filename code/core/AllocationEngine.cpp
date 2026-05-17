@@ -1,3 +1,10 @@
+/**
+ * @file AllocationEngine.cpp
+ * @brief Implements AllocationEngine::runAllocation() — the central
+ *        algorithm dispatcher for all register allocation strategies.
+ *
+ */
+
 #include "AllocationEngine.h"
 #include "../algorithms/GraphColoring.h"
 #include "../algorithms/SpillingAlgorithm.h"

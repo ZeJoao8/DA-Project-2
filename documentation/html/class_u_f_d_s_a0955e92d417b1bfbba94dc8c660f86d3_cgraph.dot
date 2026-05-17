@@ -1,0 +1,16 @@
+digraph "UFDS::linkSets"
+{
+ // INTERACTIVE_SVG=YES
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="UFDS::linkSets",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Merges the sets containing i and j (union by rank)."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="UFDS::findSet",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_u_f_d_s.html#afe161413e4cd6702b2ca2f475eddeca0",tooltip="Finds the representative (root) of the set containing element i."];
+  Node2 -> Node2 [id="edge2_Node000002_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node3 [id="edge3_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="UFDS::isSameSet",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_u_f_d_s.html#a793b0e0337223456401318c652f0cdd0",tooltip="Returns true if elements i and j belong to the same set."];
+  Node3 -> Node2 [id="edge4_Node000003_Node000002",color="steelblue1",style="solid",tooltip=" "];
+}

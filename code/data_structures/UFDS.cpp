@@ -1,9 +1,9 @@
-/*
- * UFDS.cpp
- * A simple implementation of Union-Find Disjoint Set (UFDS), required by Kruskal's algorithm.
+/**
+ * @file UFDS.cpp
+ * @brief Implements Union-Find Disjoint Set with path compression and union by rank.
  *
- * Created on: 25/01/2022
- *      Author: Gonçalo Leão
+ * @author Gonçalo Leão
+ * @date 25/01/2022
  */
 
 #include "UFDS.h"

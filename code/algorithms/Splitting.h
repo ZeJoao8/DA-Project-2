@@ -1,3 +1,18 @@
+/**
+ * @file Splitting.h
+ * @brief Declares Splitting — an iterative web-splitting register allocator.
+ *
+ * Attempts greedy graph coloring first. When coloring fails, it repeatedly:
+ *   1. Selects the highest-degree web as the split candidate.
+ *   2. Finds the optimal split point (minimum interference pressure).
+ *   3. Creates two sub-webs and incrementally updates the interference graph.
+ *   4. Retries graph coloring.
+ *
+ * This continues until coloring succeeds or the maximum number of splits is
+ * reached, at which point all webs are assigned to memory.
+ *
+ */
+
 #ifndef SPLITTING_H
 #define SPLITTING_H
 

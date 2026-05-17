@@ -1,3 +1,9 @@
+/**
+ * @file GraphBuilder.cpp
+ * @brief Implements web construction and interference graph building.
+ *
+ */
+
 #include "GraphBuilder.h"
 #include <set>
 #include <algorithm>

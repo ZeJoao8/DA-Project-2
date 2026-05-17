@@ -1,3 +1,12 @@
+/**
+ * @file SpillingAlgorithm.cpp
+ * @brief Implements Chaitin-style register allocation with explicit spilling.
+ *
+ * Three phases: initialization, simplification/spill-selection, and coloring.
+ * See SpillingAlgorithm.h for the full algorithm description.
+ *
+ */
+
 #include "SpillingAlgorithm.h"
 #include <algorithm>
 #include <iostream>

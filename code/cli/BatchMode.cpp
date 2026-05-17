@@ -1,3 +1,13 @@
+/**
+ * @file BatchMode.cpp
+ * @brief Implements the non-interactive batch allocation pipeline.
+ *
+ * Drives the full pipeline — load → buildWebs → buildInterferenceGraph →
+ * runAllocation — without any user prompts. Exceptions are caught and
+ * reported to stderr so the process exits cleanly.
+ *
+ */
+
 #include "BatchMode.h"
 #include "../io/DataLoader.h"
 #include "../core/GraphBuilder.h"

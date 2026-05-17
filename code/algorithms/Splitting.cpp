@@ -1,3 +1,11 @@
+/**
+ * @file Splitting.cpp
+ * @brief Implements the iterative web-splitting register allocator (Splitting).
+ *
+ * See Splitting.h for the full algorithm description and time complexity analysis.
+ *
+ */
+
 #include "Splitting.h"
 #include "../core/GraphBuilder.h"
 #include <algorithm>
@@ -7,7 +15,23 @@
 #include <limits>
 
 namespace {
-    bool interferes(const Web& a, const Web& b) {
+/**
+ * @brief Determines whether two webs interfere with each other.
+ *
+ * Two webs interfere if they share at least one active line where the
+ * combination does not satisfy the exception rule (one web uses the line
+ * as its last-use point while the other defines it at the same line).
+ *
+ * @param a First web.
+ * @param b Second web.
+ * @return `true` if the webs interfere and cannot share a register;
+ *         `false` if their live ranges are completely disjoint or the
+ *         overlap is entirely at adjacent use/def boundaries.
+ *
+ * @complexity O(L_a + L_b) amortised due to sorted set_intersection
+ *             followed by O(S) binary searches (S = |shared lines|).
+ */
+bool interferes(const Web& a, const Web& b) {
         std::vector<int> sharedLines;
         std::set_intersection(a.activeLines.begin(), a.activeLines.end(),
                               b.activeLines.begin(), b.activeLines.end(),

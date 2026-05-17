@@ -1,0 +1,93 @@
+# ---------------------------------------------------------------------------
+# Doxyfile — DA Project 2: Compiler Register Allocation Tool
+# ---------------------------------------------------------------------------
+# Run:  doxygen Doxyfile
+# Output is written to   documentation/html/  (open index.html)
+#         and optionally documentation/latex/  (run make inside to get PDF)
+# ---------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------
+# Project metadata
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "DA Project 2 — Register Allocation Tool"
+PROJECT_NUMBER         = "2024/2025"
+PROJECT_BRIEF          = "Graph-coloring-based compiler register allocator (Chaitin/Kempe)"
+OUTPUT_DIRECTORY       = documentation
+OUTPUT_LANGUAGE        = English
+
+#---------------------------------------------------------------------------
+# Input sources
+#---------------------------------------------------------------------------
+INPUT                  = code
+FILE_PATTERNS          = *.cpp *.h
+RECURSIVE              = YES
+
+# Exclude build artefacts / cache folders inside code/
+EXCLUDE_PATTERNS       = */build/* */.cache/*
+
+#---------------------------------------------------------------------------
+# Output formats
+#---------------------------------------------------------------------------
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_TIMESTAMP         = YES
+# Clean, accessible stylesheet
+GENERATE_TREEVIEW      = YES
+
+GENERATE_LATEX         = NO      # set YES to also produce a PDF-ready LaTeX tree
+
+#---------------------------------------------------------------------------
+# Source browsing & cross-references
+#---------------------------------------------------------------------------
+SOURCE_BROWSER         = YES     # embed source code in the HTML output
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCES_RELATION    = YES
+REFERENCED_BY_RELATION = YES
+
+#---------------------------------------------------------------------------
+# Graph generation  (requires Graphviz / dot)
+#---------------------------------------------------------------------------
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 0       # auto-detect
+CALL_GRAPH             = YES     # show which functions a function calls
+CALLER_GRAPH           = YES     # show which functions call a function
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+UML_LOOK               = NO
+DOT_IMAGE_FORMAT       = svg     # SVG scales better than PNG
+INTERACTIVE_SVG        = YES
+MAX_DOT_GRAPH_DEPTH    = 3
+
+#---------------------------------------------------------------------------
+# Documentation extraction behaviour
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES     # document even un-annotated items
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_ANON_NSPACES   = YES
+
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+
+# Enable @complexity as an alias for a styled paragraph
+ALIASES                = "complexity=@note **Time Complexity:** "
+
+#---------------------------------------------------------------------------
+# Warnings
+#---------------------------------------------------------------------------
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = NO
+
+#---------------------------------------------------------------------------
+# Preprocessing
+#---------------------------------------------------------------------------
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = NO

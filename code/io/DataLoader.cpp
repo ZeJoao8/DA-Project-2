@@ -1,3 +1,9 @@
+/**
+ * @file DataLoader.cpp
+ * @brief Implements DataLoader: path resolution and input file parsing.
+ *
+ */
+
 #include "DataLoader.h"
 #include <algorithm>
 #include <cctype>
@@ -7,7 +13,17 @@
 #include <stdexcept>
 
 namespace {
-// Helper function to trim whitespace from both ends of a string
+/**
+ * @brief Trims leading and trailing whitespace from a string.
+ *
+ * Used internally by loadRegisters() and loadRanges() to sanitise
+ * tokens read from input files.
+ *
+ * @param str Input string.
+ * @return A copy of @p str with leading/trailing whitespace removed.
+ *
+ * @complexity O(N) where N is the length of the string.
+ */
 std::string trim(const std::string &str) {
   auto start = std::find_if_not(
       str.begin(), str.end(), [](unsigned char c) { return std::isspace(c); });

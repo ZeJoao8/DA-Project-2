@@ -1,0 +1,63 @@
+digraph "BatchMode::run"
+{
+ // INTERACTIVE_SVG=YES
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="BatchMode::run",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Execute the complete register allocation pipeline in batch mode."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="GraphBuilder::buildInterference\lGraph",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph_builder.html#a8429b7ad1c88eabbbde90ba03e9f2772",tooltip="Builds an interference Graph<int> from a list of Webs."];
+  Node2 -> Node3 [id="edge2_Node000002_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="Graph::addBidirectionalEdge",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph.html#aeb94a42983b1612ddbeade1a2a0132ea",tooltip="Adds a bidirectional (undirected) edge between sourc and dest."];
+  Node3 -> Node4 [id="edge3_Node000003_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="Graph::findVertex",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph.html#a8b7b7465fbfd562e2a469f90a437ab75",tooltip="Finds and returns the vertex whose info equals in."];
+  Node2 -> Node5 [id="edge4_Node000002_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="Graph::addVertex",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph.html#a00be284ea2be3b3d0f0d2e493b70245b",tooltip="Adds a new vertex with info in to the graph."];
+  Node5 -> Node4 [id="edge5_Node000005_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node2 -> Node6 [id="edge6_Node000002_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="GraphBuilder::calculateInterferences",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph_builder.html#a1a1eb2bda019bdab2a2df0b124f9a8b4",tooltip="Calculates interference edges between all pairs of Webs."];
+  Node1 -> Node7 [id="edge7_Node000001_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node7 [id="Node000007",label="GraphBuilder::buildWebs",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph_builder.html#ad93d21ac865b72a6a7ad796e9a643899",tooltip="Builds Webs from parsed variable ranges using a greedy merging algorithm."];
+  Node1 -> Node8 [id="edge8_Node000001_Node000008",color="steelblue1",style="solid",tooltip=" "];
+  Node8 [id="Node000008",label="DataLoader::loadRanges",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_data_loader.html#a5d58052645f0902451b10d4a459f164b",tooltip="Parses the ranges.txt file to extract variable live-range points."];
+  Node1 -> Node9 [id="edge9_Node000001_Node000009",color="steelblue1",style="solid",tooltip=" "];
+  Node9 [id="Node000009",label="DataLoader::loadRegisters",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_data_loader.html#a0f8a70edcacca6c0826ecfde14bbaf38",tooltip="Parses the registers.txt configuration file."];
+  Node1 -> Node10 [id="edge10_Node000001_Node000010",color="steelblue1",style="solid",tooltip=" "];
+  Node10 [id="Node000010",label="DataLoader::resolvePath",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_data_loader.html#af341d27f8dc01283524ef926db1402ad",tooltip="Resolves a short filename to a full path by checking common directories."];
+  Node1 -> Node11 [id="edge11_Node000001_Node000011",color="steelblue1",style="solid",tooltip=" "];
+  Node11 [id="Node000011",label="AllocationEngine::runAllocation",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespace_allocation_engine.html#abdf5a1bc6f73e8e92d24d971c12d7f40",tooltip="Centralized algorithm dispatching, success checking, and output writing."];
+  Node11 -> Node12 [id="edge12_Node000011_Node000012",color="steelblue1",style="solid",tooltip=" "];
+  Node12 [id="Node000012",label="FreeAlgorithm::run",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_free_algorithm.html#adeb47ea87c3f6bb260514b10a5331520",tooltip="Run register allocation with Kempe Chain rescue."];
+  Node12 -> Node13 [id="edge13_Node000012_Node000013",color="steelblue1",style="solid",tooltip=" "];
+  Node13 [id="Node000013",label="Graph::getVertexSet",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph.html#a41624b03fcb6bd29e4df574a1ec58541",tooltip="Returns the full vertex set."];
+  Node12 -> Node14 [id="edge14_Node000012_Node000014",color="steelblue1",style="solid",tooltip=" "];
+  Node14 [id="Node000014",label="FreeAlgorithm::tryKempeRescue",height=0.2,width=0.4,color="red", fillcolor="#FFF0F0", style="filled",URL="$class_free_algorithm.html#aa89349d7b9e40272ee318ac1c6cf6389",tooltip="Attempt a Kempe Chain rescue for stuck node nodeId."];
+  Node14 -> Node4 [id="edge15_Node000014_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node11 -> Node16 [id="edge16_Node000011_Node000016",color="steelblue1",style="solid",tooltip=" "];
+  Node16 [id="Node000016",label="GraphColoring::run",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph_coloring.html#adb083cc31a37e112c1c8d7d01b389d39",tooltip="Run the greedy coloring on the interference graph."];
+  Node16 -> Node17 [id="edge17_Node000016_Node000017",color="steelblue1",style="solid",tooltip=" "];
+  Node17 [id="Node000017",label="GraphColoring::assignColor",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph_coloring.html#a0fc6ad8e9303025fa34554e7b62d2455",tooltip="Assign the lowest color not used by any neighbor."];
+  Node16 -> Node13 [id="edge18_Node000016_Node000013",color="steelblue1",style="solid",tooltip=" "];
+  Node11 -> Node18 [id="edge19_Node000011_Node000018",color="steelblue1",style="solid",tooltip=" "];
+  Node18 [id="Node000018",label="SpillingAlgorithm::run",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_spilling_algorithm.html#a5d3d1dbec2916aab0194bf167d30c3c3",tooltip="Run register allocation with spilling."];
+  Node18 -> Node4 [id="edge20_Node000018_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node18 -> Node19 [id="edge21_Node000018_Node000019",color="steelblue1",style="solid",tooltip=" "];
+  Node19 [id="Node000019",label="SpillingAlgorithm::\lselectSpillCandidate",height=0.2,width=0.4,color="red", fillcolor="#FFF0F0", style="filled",URL="$class_spilling_algorithm.html#ad6bfc9bb24c652e203f6b89c296b932c",tooltip="Select the best spill candidate using Chaitin's heuristic."];
+  Node11 -> Node21 [id="edge22_Node000011_Node000021",color="steelblue1",style="solid",tooltip=" "];
+  Node21 [id="Node000021",label="Splitting::runWithSplitting",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_splitting.html#ad23c37aa242ac869b8cbb77e7716cc0e",tooltip="Run register allocation with iterative web splitting."];
+  Node21 -> Node3 [id="edge23_Node000021_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node5 [id="edge24_Node000021_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node2 [id="edge25_Node000021_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node22 [id="edge26_Node000021_Node000022",color="steelblue1",style="solid",tooltip=" "];
+  Node22 [id="Node000022",label="Splitting::findSplitPoint",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_splitting.html#a3d5fb5815d03e3eec56480bcdfea5eca",tooltip="Find the optimal split point for a web."];
+  Node21 -> Node23 [id="edge27_Node000021_Node000023",color="steelblue1",style="solid",tooltip=" "];
+  Node23 [id="Node000023",label="Graph::removeVertex",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_graph.html#af9c903104ad69a7782979fa9caedf163",tooltip="Removes the vertex with info in and all its incident edges."];
+  Node21 -> Node16 [id="edge28_Node000021_Node000016",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node24 [id="edge29_Node000021_Node000024",color="steelblue1",style="solid",tooltip=" "];
+  Node24 [id="Node000024",label="Splitting::selectSplitCandidate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_splitting.html#a8806b83232bf3c78d52777a392fed58c",tooltip="Select the web with the highest degree in the interference graph."];
+  Node24 -> Node13 [id="edge30_Node000024_Node000013",color="steelblue1",style="solid",tooltip=" "];
+  Node11 -> Node25 [id="edge31_Node000011_Node000025",color="steelblue1",style="solid",tooltip=" "];
+  Node25 [id="Node000025",label="OutputWriter::writeResult",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_output_writer.html#a215e2f8193f535b74ea3701f996c3ba3",tooltip="Writes the register allocation result to a plain-text file."];
+}

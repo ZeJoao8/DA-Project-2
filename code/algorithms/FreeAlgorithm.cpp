@@ -1,3 +1,12 @@
+/**
+ * @file FreeAlgorithm.cpp
+ * @brief Implements register allocation with Kempe Chain rescue (FreeAlgorithm).
+ *
+ * See FreeAlgorithm.h for the full algorithm description and time complexity
+ * analysis of each phase.
+ *
+ */
+
 #include "FreeAlgorithm.h"
 #include <algorithm>
 #include <iostream>
