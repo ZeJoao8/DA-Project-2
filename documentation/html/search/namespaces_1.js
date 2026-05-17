@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['batchmode_0',['BatchMode',['../namespace_batch_mode.html',1,'']]]
+  ['batchmode_0',['BatchMode',['../namespaceBatchMode.html',1,'']]]
 ];

@@ -59,7 +59,7 @@ public:
      * @return ColoringResult with success flag and web->register mapping.
      *         result.success is true only if no node was ultimately spilled.
      *
-     * @complexity O(V^2 + V * N^2 * (V + E)) in the worst case
+     * @complexity O(V × N² × (V + E))
      */
     static ColoringResult run(
         const Graph<int>& graph,

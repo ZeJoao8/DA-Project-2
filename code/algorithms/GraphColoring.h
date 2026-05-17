@@ -38,7 +38,7 @@ struct ColoringResult {
  *   If all remaining nodes have degree >= N, spill the highest-degree node.
  * Phase 2 - Coloring: pop stack and assign the lowest available color not used by neighbors.
  *
- * @complexity O(V^2) where V = number of webs.
+ * @complexity O(V + E) where V = number of webs and E = number of interferences.
  */
 class GraphColoring {
 public:
@@ -51,7 +51,7 @@ public:
      * @param spilledWebIds  Web IDs pre-decided as spilled (excluded from coloring).
      * @return ColoringResult with success flag and web->register mapping.
      *
-     * @complexity O(V^2)
+     * @complexity O(V + E)
      */
     static ColoringResult run(
         const Graph<int>& graph,

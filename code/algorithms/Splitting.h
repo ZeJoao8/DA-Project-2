@@ -30,8 +30,8 @@
  * coloring on the rebuilt interference graph, up to a maximum number
  * of splits.
  *
- * @complexity O(maxSplits * (V^2 + C))
- *   where V = number of webs and C = cost of GraphColoring::run().
+ * @complexity O(K × V × L)
+ * where K = maxSplits, V = number of webs, L = average activeLines size per web.
  */
 class Splitting {
 public:
@@ -53,7 +53,7 @@ public:
      * @param maxSplits    Maximum number of webs that can be split.
      * @return ColoringResult with success flag and web->register mapping.
      *
-     * @complexity O(maxSplits * (V^2 + E)) where V = |webs|, E = |edges|.
+     * @complexity O(K × V × L) where V = |webs|, E = |edges|.
      */
     static ColoringResult runWithSplitting(
         const Graph<int>& graph,

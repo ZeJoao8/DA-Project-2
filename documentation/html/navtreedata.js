@@ -56,9 +56,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_allocation_engine_8cpp.html"
+"AllocationEngine_8cpp.html",
+"structWeb.html#af59e2bcb1907d91a75a5d2598e0eb1b6"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronization';
-var SYNCOFFMSG = 'click to enable panel synchronization';
-var LISTOFALLMEMBERS = 'List of all members';
+var SYNCONMSG = 'click to disable panel synchronisation';
+var SYNCOFFMSG = 'click to enable panel synchronisation';
