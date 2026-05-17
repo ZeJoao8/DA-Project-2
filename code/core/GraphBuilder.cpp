@@ -99,8 +99,6 @@ std::vector<std::pair<int, int>> GraphBuilder::calculateInterferences(const std:
                 continue;
             }
 
-            bool interferes = true;
-
             // Exception Rule: Two webs DO NOT interfere at line L if Web A ends at L 
             // and Web B begins at L (or vice-versa).
             // We check if ALL shared lines satisfy this exception rule (assuming they share no other lines
@@ -119,12 +117,7 @@ std::vector<std::pair<int, int>> GraphBuilder::calculateInterferences(const std:
                 }
             }
 
-            // If every shared line is covered by the exception, they don't actually interfere
-            if (allExceptions) {
-                interferes = false;
-            }
-
-            if (interferes) {
+            if (!allExceptions) {
                 interferences.push_back({a.id, b.id});
             }
         }
