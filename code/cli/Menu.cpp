@@ -3,8 +3,8 @@
 #include "../algorithms/FreeAlgorithm.h"
 #include "../algorithms/SpillingAlgorithm.h"
 #include "../algorithms/Splitting.h"
-#include "../utils/DataLoader.h"
-#include "../utils/OutputWriter.h"
+#include "../io/DataLoader.h"
+#include "../io/OutputWriter.h"
 #include <iomanip>
 #include <iostream>
 #include <limits>

@@ -1,5 +1,5 @@
 #include "Splitting.h"
-#include "../utils/GraphBuilder.h"
+#include "../core/GraphBuilder.h"
 #include <algorithm>
 #include <iostream>
 #include <unordered_set>

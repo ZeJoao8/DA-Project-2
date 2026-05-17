@@ -14,8 +14,9 @@ include_directories(.)
 # Forma correta de apanhar todos os ficheiros .cpp nas respetivas pastas
 file(GLOB SOURCES 
     "main.cpp"
-    "App/*.cpp"
-    "utils/*.cpp"
+    "cli/*.cpp"
+    "core/*.cpp"
+    "io/*.cpp"
     "data_structures/*.cpp"
     "algorithms/*.cpp"
 )

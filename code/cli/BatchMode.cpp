@@ -1,11 +1,11 @@
 #include "BatchMode.h"
-#include "../utils/DataLoader.h"
-#include "../utils/GraphBuilder.h"
+#include "../io/DataLoader.h"
+#include "../core/GraphBuilder.h"
 #include "../algorithms/GraphColoring.h"
 #include "../algorithms/SpillingAlgorithm.h"
 #include "../algorithms/Splitting.h"
 #include "../algorithms/FreeAlgorithm.h"
-#include "../utils/OutputWriter.h"
+#include "../io/OutputWriter.h"
 #include <iostream>
 
 namespace BatchMode {

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "App/BatchMode.h"
-#include "App/Menu.h"
+#include "cli/BatchMode.h"
+#include "cli/Menu.h"
 
 int main(int argc, char* argv[]) {
     if (argc == 1) {

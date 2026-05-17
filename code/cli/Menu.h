@@ -1,8 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "../utils/DataLoader.h"
-#include "../utils/GraphBuilder.h"
+#include "../io/DataLoader.h"
+#include "../core/GraphBuilder.h"
 #include <string>
 #include <unordered_map>
 #include <vector>

@@ -1,8 +1,8 @@
 #ifndef GRAPHBUILDER_H
 #define GRAPHBUILDER_H
 
-#include "DataLoader.h"
-#include "data_structures/Graph.h"
+#include "../io/DataLoader.h"
+#include "../data_structures/Graph.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
